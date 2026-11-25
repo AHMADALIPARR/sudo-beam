@@ -1,5 +1,12 @@
 # SUDO-BEAM
 
+[![CI](https://github.com/AHMADALIPARR/sudo-beam/actions/workflows/ci.yml/badge.svg)](https://github.com/AHMADALIPARR/sudo-beam/actions/workflows/ci.yml)
+[![run_all.sh](https://img.shields.io/badge/run_all.sh-PASS-brightgreen)](https://github.com/AHMADALIPARR/sudo-beam)
+[![Java tests](https://img.shields.io/badge/Java_tests-10%2F10-brightgreen)](https://github.com/AHMADALIPARR/sudo-beam)
+[![ExUnit](https://img.shields.io/badge/ExUnit-5_passed-brightgreen)](https://github.com/AHMADALIPARR/sudo-beam)
+[![BeamSession](https://img.shields.io/badge/BeamSession-round--trip_PASS-brightgreen)](https://github.com/AHMADALIPARR/sudo-beam)
+[![zero-py](https://img.shields.io/badge/zero--py-0_files-blue)](https://github.com/AHMADALIPARR/sudo-beam)
+
 A virtual `sudo` command processor written in Java with AWK authorization and an Erlang/OTP WebSocket gateway. A BEAM port provides the foreign-process interface: each WebSocket session owns a JVM worker and its own virtual filesystem. No host sudo, setuid binary, host shell, or JNI library is involved.
 
 # 1. System Architecture & Execution Pipeline
@@ -11,8 +18,8 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Repository | `AHMADALIPARR/sudo-beam`, private, branch `main` |
 | Tree audited | `/home/hatch/workspace/sudo-beam` |
 | Audit date | 2026-11-24 |
-| Tracked source files | 58 |
-| Total source lines (`wc -l`) | 5305 |
+| Tracked source files | 59 |
+| Total source lines (`wc -l`) | 5396 |
 | Build outputs audited | none; `build/`, `sovereign/control/_build`, `sovereign/control/priv`, `.mojo_cache` excluded |
 | Local git repository | none in this tree; history exists only on the remote |
 | Host OS | Ubuntu 24.04.5 LTS, x86_64 |
@@ -518,70 +525,71 @@ appends exactly one `\n` to the message.
 Method:
 `find . -path ./build -prune -o -path ./sovereign/control/_build -prune -o -path ./sovereign/control/priv -prune -o -path ./.mojo_cache -prune -o -type f -print0 | sort -z | xargs -0 wc -l`.
 
-Build outputs excluded. Counts verified 2026-11-24.
+Build outputs excluded. Counts verified 2026-11-25.
 
 | # | Path | Language / runtime | Lines | External dependencies |
 |---|---|---|---|---|
 | 1 | `.dockerignore` | ignore list | 3 | none |
-| 2 | `.gitignore` | ignore list | 3 | none |
-| 3 | `Dockerfile` | Dockerfile | 17 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
-| 4 | `Makefile` | GNU Make | 19 | JDK 17+ (`javac`, `java`, `jar`) |
-| 5 | `README.md` | Markdown | 2073 | none |
-| 6 | `assets/architecture.svg` | SVG | 91 | none |
-| 7 | `assets/data-flow.svg` | SVG | 80 | none |
-| 8 | `assets/terminal-run-all.svg` | SVG | 35 | none |
-| 9 | `assets/wire-framing.svg` | SVG | 87 | none |
-| 10 | `awk/policy.awk` | AWK | 6 | POSIX AWK (`/usr/bin/awk`) |
-| 11 | `awk/sudoers` | policy data | 14 | none (read by `awk/policy.awk`) |
-| 12 | `beam/rebar.config` | Erlang config | 2 | Cowboy 2.12.0 |
-| 13 | `beam/src/sudo_beam.app.src` | Erlang config | 6 | Cowboy (application dependency) |
-| 14 | `beam/src/sudo_beam_app.erl` | Erlang | 20 | Cowboy, `crypto` |
-| 15 | `beam/src/sudo_beam_ffi.erl` | Erlang | 19 | JVM (`java`, external process) |
-| 16 | `beam/src/sudo_beam_sup.erl` | Erlang | 5 | none |
-| 17 | `beam/src/sudo_beam_ws.erl` | Erlang | 45 | Cowboy, `crypto` |
-| 18 | `compose.yaml` | YAML / Compose | 16 | Docker Compose; image built from `Dockerfile` |
-| 19 | `java/src/SudoEmulator.java` | Java 17+ | 137 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
-| 20 | `receipts/SHA256SUMS` | checksum list | 51 | none (generated) |
-| 21 | `run_all.sh` | Bash | 83 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
-| 22 | `sovereign/.gitignore` | ignore list | 6 | none |
-| 23 | `sovereign/README.md` | Markdown | 113 | none |
-| 24 | `sovereign/control/config/config.exs` | Elixir config | 18 | none |
-| 25 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
-| 26 | `sovereign/control/lib/application.ex` | Elixir | 22 | none |
-| 27 | `sovereign/control/lib/kernel_port.ex` | Elixir | 235 | Mojo worker binaries (`field_ops`, `holo_verify`) |
-| 28 | `sovereign/control/lib/receipt_store.ex` | Elixir | 55 | none (`:crypto` stdlib) |
-| 29 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 78 | none (`:json` stdlib); network not wired |
-| 30 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 169 | JVM (`java`, external process) |
-| 31 | `sovereign/control/lib/sudo/common.ex` | Elixir | 23 | none |
-| 32 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 10 | none |
-| 33 | `sovereign/control/lib/sudo/email.ex` | Elixir | 55 | none |
-| 34 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 43 | none |
-| 35 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 24 | none |
-| 36 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 14 | none (`Logger` stdlib) |
-| 37 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 17 | none |
-| 38 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 36 | none |
-| 39 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 31 | none |
-| 40 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 19 | none |
-| 41 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 32 | none |
-| 42 | `sovereign/control/lib/sudo/user.ex` | Elixir | 36 | none |
-| 43 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 38 | none |
-| 44 | `sovereign/control/mix.exs` | Elixir config | 31 | none (`deps: []`) |
-| 45 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 78 | none (`:crypto`, `KernelPort`) |
-| 46 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 1 | none |
-| 47 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 68 | none |
-| 48 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 100 | none |
-| 49 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 48 | none |
-| 50 | `sovereign/kernels/build_kernels.sh` | Bash | 14 | `mojo` |
-| 51 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 208 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 52 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 328 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 53 | `sovereign/receipts/SHA256SUMS` | checksum list | 32 | none (generated) |
-| 54 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
-| 55 | `sovereign/run_pipeline.sh` | Bash | 61 | `mojo`, `mix`, `sha256sum` |
-| 56 | `sovereign/vm/bootstrap.sh` | Bash | 68 | apt, Erlang Solutions repo, Modular installer |
-| 57 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
-| 58 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
+| 2 | `.github/workflows/ci.yml` | YAML / GitHub Actions | 69 | actions/checkout@v4, actions/setup-java@v4, erlef/setup-beam@v1, actions/upload-artifact@v4, Modular installer, run_all.sh |
+| 3 | `.gitignore` | ignore list | 3 | none |
+| 4 | `Dockerfile` | Dockerfile | 17 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
+| 5 | `Makefile` | GNU Make | 19 | JDK 17+ (`javac`, `java`, `jar`) |
+| 6 | `README.md` | Markdown | 2090 | none |
+| 7 | `assets/architecture.svg` | SVG | 91 | none |
+| 8 | `assets/data-flow.svg` | SVG | 80 | none |
+| 9 | `assets/terminal-run-all.svg` | SVG | 35 | none |
+| 10 | `assets/wire-framing.svg` | SVG | 87 | none |
+| 11 | `awk/policy.awk` | AWK | 6 | POSIX AWK (`/usr/bin/awk`) |
+| 12 | `awk/sudoers` | policy data | 14 | none (read by `awk/policy.awk`) |
+| 13 | `beam/rebar.config` | Erlang config | 2 | Cowboy 2.12.0 |
+| 14 | `beam/src/sudo_beam.app.src` | Erlang config | 6 | Cowboy (application dependency) |
+| 15 | `beam/src/sudo_beam_app.erl` | Erlang | 20 | Cowboy, `crypto` |
+| 16 | `beam/src/sudo_beam_ffi.erl` | Erlang | 19 | JVM (`java`, external process) |
+| 17 | `beam/src/sudo_beam_sup.erl` | Erlang | 5 | none |
+| 18 | `beam/src/sudo_beam_ws.erl` | Erlang | 45 | Cowboy, `crypto` |
+| 19 | `compose.yaml` | YAML / Compose | 16 | Docker Compose; image built from `Dockerfile` |
+| 20 | `java/src/SudoEmulator.java` | Java 17+ | 137 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
+| 21 | `receipts/SHA256SUMS` | checksum list | 56 | none (generated) |
+| 22 | `run_all.sh` | Bash | 83 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
+| 23 | `sovereign/.gitignore` | ignore list | 6 | none |
+| 24 | `sovereign/README.md` | Markdown | 113 | none |
+| 25 | `sovereign/control/config/config.exs` | Elixir config | 18 | none |
+| 26 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
+| 27 | `sovereign/control/lib/application.ex` | Elixir | 22 | none |
+| 28 | `sovereign/control/lib/kernel_port.ex` | Elixir | 235 | Mojo worker binaries (`field_ops`, `holo_verify`) |
+| 29 | `sovereign/control/lib/receipt_store.ex` | Elixir | 55 | none (`:crypto` stdlib) |
+| 30 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 78 | none (`:json` stdlib); network not wired |
+| 31 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 169 | JVM (`java`, external process) |
+| 32 | `sovereign/control/lib/sudo/common.ex` | Elixir | 23 | none |
+| 33 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 10 | none |
+| 34 | `sovereign/control/lib/sudo/email.ex` | Elixir | 55 | none |
+| 35 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 43 | none |
+| 36 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 24 | none |
+| 37 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 14 | none (`Logger` stdlib) |
+| 38 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 17 | none |
+| 39 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 36 | none |
+| 40 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 31 | none |
+| 41 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 19 | none |
+| 42 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 32 | none |
+| 43 | `sovereign/control/lib/sudo/user.ex` | Elixir | 36 | none |
+| 44 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 38 | none |
+| 45 | `sovereign/control/mix.exs` | Elixir config | 31 | none (`deps: []`) |
+| 46 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 78 | none (`:crypto`, `KernelPort`) |
+| 47 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 1 | none |
+| 48 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 68 | none |
+| 49 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 100 | none |
+| 50 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 48 | none |
+| 51 | `sovereign/kernels/build_kernels.sh` | Bash | 14 | `mojo` |
+| 52 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 208 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 53 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 328 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 54 | `sovereign/receipts/SHA256SUMS` | checksum list | 32 | none (generated) |
+| 55 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
+| 56 | `sovereign/run_pipeline.sh` | Bash | 61 | `mojo`, `mix`, `sha256sum` |
+| 57 | `sovereign/vm/bootstrap.sh` | Bash | 68 | apt, Erlang Solutions repo, Modular installer |
+| 58 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
+| 59 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
 
-Totals: 58 files, 5305 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
+Totals: 59 files, 5396 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
 (`beam/rebar.config`), plus the `erlang:27-bookworm` container base image (`Dockerfile`).
 
 All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, and Bash.
@@ -634,7 +642,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Base-layer build and test entry points. |
 | Dependencies | JDK 17+ (`javac`, `java`, `jar`); rebar3 for `beam` target |
 
-### 2.2.5 `README.md` (2073 lines, Markdown)
+### 2.2.5 `README.md` (2090 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -754,7 +762,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | The entire virtual sudo: parsing, identity, policy dispatch, virtual filesystem. |
 | Dependencies | JDK stdlib only (`java.io.*`, `java.nio.charset.StandardCharsets`, `java.nio.file.*`, `java.util.*`, `java.util.concurrent.TimeUnit`) |
 
-### 2.2.16 `receipts/SHA256SUMS` (51 lines, checksum list)
+### 2.2.16 `receipts/SHA256SUMS` (56 lines, checksum list)
 
 | Field | Value |
 |---|---|
@@ -1201,6 +1209,15 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Format | Standalone SVG, no external resources, no scripts, no web fonts |
 | Responsibility | Visual companion to §3. Hand-built from the real framing code. |
 | Dependencies | none |
+
+### 2.2.59 `.github/workflows/ci.yml` (69 lines, YAML)
+
+| Field | Value |
+|---|---|
+| Jobs | `zero-py` (fail-closed gate, mirrors the `run_all.sh` pre-flight), `run-all` (needs `zero-py`; JDK 21, Elixir 1.20.5 / OTP 29.1, Mojo 1.2.0, `bash run_all.sh` with exit-0, `run_all done`, and no-`SKIP` assertions; uploads `run-all.log` on failure) |
+| Triggers | `push`, `pull_request` |
+| Responsibility | The repository's GitHub Actions pipeline; the live CI badge at the top of this file reports its status. |
+| Dependencies | `actions/checkout@v4`, `actions/setup-java@v4`, `erlef/setup-beam@v1`, `actions/upload-artifact@v4`, Modular installer (`get.modular.com`), `run_all.sh` |
 
 # 3. Wire Protocols, Schemas & Binary Layouts
 
