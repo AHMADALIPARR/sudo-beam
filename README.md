@@ -59,7 +59,7 @@ flowchart LR
 
 ## Quick start without BEAM
 
-Requires JDK 17 or newer, POSIX AWK at `/usr/bin/awk`, GNU Make and Python 3 for tests.
+Requires JDK 17 or newer, POSIX AWK at `/usr/bin/awk`, and GNU Make. Tests are Java (JDK standard library only).
 
 ```sh
 make test
@@ -158,7 +158,7 @@ One in-flight request per connection, 16 KiB command limit, 256 virtual filesyst
 Authoring environment result: **10/10 tests passed** with OpenJDK 21 and mawk. Erlang, Cowboy and Docker were not available in that environment; `make beam`, the Docker build and the live WebSocket path have not been run there. The following command is a manual end-to-end check once the container is running:
 
 ```sh
-python3 tests/ws_smoke.py
+make smoke  # needs SUDO_BEAM_TOKEN and the gateway running
 ```
 
 ## Repository layout
@@ -178,8 +178,8 @@ sudo-beam/
 │       └── sudo_beam_ws.erl
 ├── java/src/SudoEmulator.java
 ├── tests/
-│   ├── test_port.py
-│   └── ws_smoke.py
+│   ├── SudoEmulatorTest.java
+│   └── WsSmoke.java
 ├── Dockerfile
 ├── compose.yaml
 └── Makefile

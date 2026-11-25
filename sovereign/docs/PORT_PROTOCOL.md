@@ -39,9 +39,9 @@ self-test and prints `field_ops self-test: PASS (9 checks)`.
 
 ### holo_verify — `control/priv/holo_verify`, `--port`
 Pure-MoJo SHA-256 (no stdlib SHA-256 in Mojo 1.2 — see the
-file header). Mirrored and verified in Python:
-`kernels/tests/verify_sha256_and_framing.py` (5 vectors +
-500 random inputs vs hashlib, PASS 2026-11-24).
+file header). Mirrored and verified in Elixir:
+`control/test/sha256_and_framing_test.exs` (5 vectors +
+50 random inputs vs `:crypto`, PASS 2026-11-24).
 
 | Opcode | Name | Request payload | Response payload |
 |---|---|---|---|
@@ -85,14 +85,16 @@ bash run_pipeline.sh
 ./control/priv/holo_verify README.md <sha256>
 ```
 
-## What is NOT verified here
+## What is verified here
 
-The Mojo code has NOT been compiled on this host — no Mojo
-toolchain here, by design. The Python mirror verifies the
-SHA-256 algorithm and the framing encode/decode, not Mojo
-syntax. First guest compile is the real check, especially:
-libc `read`/`write` via `external_call`, `String` indexing /
-`chr()`, and `FileHandle.read_bytes()`. If any of those APIs
-differ in Mojo 1.2, fix that one call site in the guest and
-re-run the tests above — the protocol and the Elixir side
-do not change.
+The Mojo kernels have been compiled and run on this host
+(Mojo 1.2.0): `field_ops` self-test PASS (9 checks),
+`holo_verify` CLI VERIFIED on empty / "abc" / README /
+1,000,000 x "a", and Port loops PASS for both workers.
+The SHA-256 algorithm and the framing encode/decode are
+also verified in Elixir (`control/test/sha256_and_framing_test.exs`)
+against `:crypto`. The VirtualBox guest compile is still the
+deployment check: if any libc `read`/`write` via
+`external_call`, `String`, or file API differs there, fix
+that one call site in the guest and re-run the tests — the
+protocol and the Elixir side do not change.

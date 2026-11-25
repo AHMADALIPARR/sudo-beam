@@ -25,9 +25,10 @@
 #       == lo + hi * (2^32 - 1)          (mod p)
 # Apply the same step once more to the 128-bit intermediate,
 # then subtract p while the result is >= p (at most twice).
-# The algorithm was checked in Python against (a*b) % p for
-# 200,000 random canonical pairs plus the edge vectors in main()
-# on 2026-11-24.
+# The algorithm is checked by the field_ops self-test (9 checks,
+# incl. the edge vectors in main()) and by
+# control/test/sha256_and_framing_test.exs (fp edge:
+# (p-1)*(p-1) mod p == 1), run by `mix test` in the pipeline.
 #
 # Mojo 1.2 notes (verified by compiling on this host 2026-11-24):
 # `fn` is removed, use `def`; top-level constants are `comptime`;

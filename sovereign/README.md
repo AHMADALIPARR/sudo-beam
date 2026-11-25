@@ -56,11 +56,12 @@ sovereign-beam-mojo/
 ├── kernels/
 │   ├── field_ops.mojo         # Goldilocks Fp arithmetic + --port worker (0x01-0x03)
 │   ├── holo_verify.mojo       # pure-MoJo SHA-256 verifier + --port worker (0x10)
-│   ├── tests/verify_sha256_and_framing.py  # Python mirror: SHA-256 vectors + framing
 │   └── build_kernels.sh       # mojo build -> priv/
 ├── control/
 │   ├── mix.exs                # zero-bloat OTP app, no web framework, no deps
 │   ├── config/config.exs
+│   ├── test/
+│   │   └── sha256_and_framing_test.exs  # ExUnit: SHA-256 vectors + framing + fp edge
 │   └── lib/
 │       ├── application.ex     # root Supervisor
 │       ├── kernel_port.ex     # GenServer: persistent framed Ports, 5s timeout, reopen

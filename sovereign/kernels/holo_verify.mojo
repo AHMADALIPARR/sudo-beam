@@ -15,12 +15,12 @@
 #
 # SHA-256 here is PURE Mojo — Mojo 1.2 stdlib `hashlib` is the
 # Hasher trait (Fnv1a / AHasher), not a cryptographic SHA-256,
-# so there is no stdlib call to use. The algorithm below mirrors
-# kernels/tests/verify_sha256_and_framing.py exactly (same K,
-# same H, same rotr / padding / chunk loop). That Python mirror
-# was checked against hashlib for 5 test vectors (empty, "abc",
-# the 56-byte NIST vector, 1,000,000 x "a", bytes 0..255) plus
-# 500 random inputs on 2026-11-24 — all PASS.
+# so there is no stdlib call to use. The algorithm below is
+# verified in Elixir by control/test/sha256_and_framing_test.exs
+# (same K, same H, same rotr / padding / chunk loop): 5 test
+# vectors (empty, "abc", the 56-byte NIST vector, 1,000,000 x
+# "a", bytes 0..255) plus 50 random inputs, all vs :crypto —
+# all PASS on 2026-11-24.
 #
 # Mojo 1.2 notes (verified by compiling on this host 2026-11-24):
 # `fn` is removed, use `def`; top-level constants are `comptime`;

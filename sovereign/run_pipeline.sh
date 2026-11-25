@@ -28,7 +28,15 @@ else
   log "SKIP mojo build: 'mojo' not on PATH (expected on host; required in guest)"
 fi
 
-# 3. BEAM release
+# 3. BEAM tests (ExUnit, OTP stdlib only)
+if have mix; then
+  log "BEAM tests"
+  (cd control && mix test)
+else
+  log "SKIP mix test: 'mix' not on PATH (expected on host; required in guest)"
+fi
+
+# 4. BEAM release
 if have mix; then
   log "building BEAM release"
   if (cd control && mix deps.get --only prod 2>/dev/null || true; mix release --overwrite); then
@@ -43,7 +51,7 @@ else
   log "SKIP mix release: 'mix' not on PATH (expected on host; required in guest)"
 fi
 
-# 4. Verify: receipts for every source file, then self-check
+# 5. Verify: receipts for every source file, then self-check
 log "emitting receipts"
 find vm kernels control docs README.md run_pipeline.sh -type f \
   \( -name '*.sh' -o -name '*.mojo' -o -name '*.ex' -o -name '*.exs' -o -name '*.md' \) \
