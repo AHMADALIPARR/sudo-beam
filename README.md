@@ -19,7 +19,7 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Tree audited | `/home/hatch/workspace/sudo-beam` |
 | Audit date | 2026-11-24 |
 | Tracked source files | 59 |
-| Total source lines (`wc -l`) | 5405 |
+| Total source lines (`wc -l`) | 5408 |
 | Build outputs audited | none; `build/`, `sovereign/control/_build`, `sovereign/control/priv`, `.mojo_cache` excluded |
 | Local git repository | none in this tree; history exists only on the remote |
 | Host OS | Ubuntu 24.04.5 LTS, x86_64 |
@@ -530,7 +530,7 @@ Build outputs excluded. Counts verified 2026-11-25.
 | # | Path | Language / runtime | Lines | External dependencies |
 |---|---|---|---|---|
 | 1 | `.dockerignore` | ignore list | 3 | none |
-| 2 | `.github/workflows/ci.yml` | YAML / GitHub Actions | 78 | actions/checkout@v4, actions/setup-java@v4, erlef/setup-beam@v1, actions/upload-artifact@v4, PyPI mojo==1.2.0 (venv), run_all.sh |
+| 2 | `.github/workflows/ci.yml` | YAML / GitHub Actions | 81 | actions/checkout@v4, actions/setup-java@v4, erlef/setup-beam@v1, actions/upload-artifact@v4, PyPI mojo==1.2.0 (venv), run_all.sh |
 | 3 | `.gitignore` | ignore list | 3 | none |
 | 4 | `Dockerfile` | Dockerfile | 17 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
 | 5 | `Makefile` | GNU Make | 19 | JDK 17+ (`javac`, `java`, `jar`) |
@@ -589,7 +589,7 @@ Build outputs excluded. Counts verified 2026-11-25.
 | 58 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
 | 59 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
 
-Totals: 59 files, 5405 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
+Totals: 59 files, 5408 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
 (`beam/rebar.config`), plus the `erlang:27-bookworm` container base image (`Dockerfile`).
 
 All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, and Bash.
@@ -1210,7 +1210,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Visual companion to §3. Hand-built from the real framing code. |
 | Dependencies | none |
 
-### 2.2.59 `.github/workflows/ci.yml` (78 lines, YAML)
+### 2.2.59 `.github/workflows/ci.yml` (81 lines, YAML)
 
 | Field | Value |
 |---|---|

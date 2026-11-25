@@ -61,18 +61,21 @@ jobs:
           echo "$HOME/.venv-mojo/bin" >> "$GITHUB_PATH"
       - name: Install mawk (policy evaluator)
         run: sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mawk
+      # The log goes to /tmp, not the repo root: run_all.sh receipts
+      # every file in the tree, so a log written there would be hashed
+      # while still being written and fail its own receipt check.
       - name: Run the whole tree — expect exit 0, no SKIP, "run_all done"
         run: |
           mojo --version
           java -version
           elixir --version
-          bash run_all.sh 2>&1 | tee run-all.log
+          bash run_all.sh 2>&1 | tee /tmp/run-all.log
           test "${PIPESTATUS[0]}" -eq 0
-          grep -q "run_all done" run-all.log
-          if grep -q "SKIP" run-all.log; then echo "FAIL: a pipeline step was skipped, not run" >&2; exit 1; fi
+          grep -q "run_all done" /tmp/run-all.log
+          if grep -q "SKIP" /tmp/run-all.log; then echo "FAIL: a pipeline step was skipped, not run" >&2; exit 1; fi
       - name: Upload run log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: run-all-log
-          path: run-all.log
+          path: /tmp/run-all.log
