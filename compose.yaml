@@ -1,0 +1,16 @@
+services:
+  sudo-beam:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      SUDO_BEAM_TOKEN: ${SUDO_BEAM_TOKEN:?set SUDO_BEAM_TOKEN to at least 16 characters}
+      SUDO_BEAM_CALLER: ${SUDO_BEAM_CALLER:-operator}
+      HOME: /tmp
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 768m

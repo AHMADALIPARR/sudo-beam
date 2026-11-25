@@ -1,0 +1,6 @@
+control/priv/
+control/_build/
+control/deps/
+.mojo_cache/
+*.zip
+erl_crash.dump

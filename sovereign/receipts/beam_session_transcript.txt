@@ -1,0 +1,23 @@
+$ whoami
+operator
+
+$ sudo id
+uid=0(root) gid=0(root) [virtual]
+
+$ sudo -l
+root: id
+root: whoami
+root: pwd
+root: ls
+root: cat
+root: mkdir
+root: touch
+root: write
+root: echo
+
+$ mkdir work
+
+$ write work/report "hello from the sovereign layer"
+
+$ cat work/report
+hello from the sovereign layer

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# run_pipeline.sh — master entry point: build -> verify -> emit SHA256SUMS
+# Run inside the VirtualBox guest. On a host without Elixir/Mojo it
+# skips compilation, still checks every script, and still emits
+# receipts for the source tree. It never fetches a repo or a package.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+RECEIPTS_DIR="${ROOT}/receipts"
+mkdir -p "$RECEIPTS_DIR"
+
+log() { printf '[pipeline] %s\n' "$*"; }
+have() { command -v "$1" >/dev/null 2>&1; }
+
+log "root: $ROOT"
+
+# 1. Script syntax check (always runs, everywhere)
+for f in vm/bootstrap.sh kernels/build_kernels.sh run_pipeline.sh; do
+  bash -n "$f" && log "bash -n OK: $f"
+done
+
+# 2. Mojo kernels -> control/priv/
+if have mojo; then
+  log "building Mojo kernels"
+  bash kernels/build_kernels.sh
+else
+  log "SKIP mojo build: 'mojo' not on PATH (expected on host; required in guest)"
+fi
+
+# 3. BEAM release
+if have mix; then
+  log "building BEAM release"
+  if (cd control && mix deps.get --only prod 2>/dev/null || true; mix release --overwrite); then
+    log "BEAM release OK"
+  else
+    log "in-project release failed (host overlayfs File.cp quirk); retrying under /tmp"
+    REL_TMP="$(mktemp -d)"
+    (cd control && MIX_ENV=prod mix release --overwrite --path "${REL_TMP}/sbm-rel")
+    log "release built under ${REL_TMP}/sbm-rel"
+  fi
+else
+  log "SKIP mix release: 'mix' not on PATH (expected on host; required in guest)"
+fi
+
+# 4. Verify: receipts for every source file, then self-check
+log "emitting receipts"
+find vm kernels control docs README.md run_pipeline.sh -type f \
+  \( -name '*.sh' -o -name '*.mojo' -o -name '*.ex' -o -name '*.exs' -o -name '*.md' \) \
+  -print0 | sort -z | xargs -0 sha256sum > "${RECEIPTS_DIR}/SHA256SUMS"
+sha256sum -c "${RECEIPTS_DIR}/SHA256SUMS" >/dev/null && log "sha256sum -c OK"
+log "receipts: ${RECEIPTS_DIR}/SHA256SUMS ($(wc -l < "${RECEIPTS_DIR}/SHA256SUMS") files)"
+log "pipeline done"

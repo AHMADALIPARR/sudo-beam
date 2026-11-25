@@ -1,0 +1,14 @@
+# caller    target    command   verdict
+operator    root      id        allow
+operator    root      whoami    allow
+operator    root      pwd       allow
+operator    root      ls        allow
+operator    root      cat       allow
+operator    root      mkdir     allow
+operator    root      touch     allow
+operator    root      write     allow
+operator    root      echo      allow
+operator    service   id        allow
+operator    service   whoami    allow
+operator    service   ls        allow
+operator    service   cat       allow

@@ -1,0 +1,6 @@
+{application, sudo_beam,
+ [{description, "Virtual sudo WebSocket/Port gateway"},
+  {vsn, "0.1.0"},
+  {registered, [sudo_beam_sup]},
+  {mod, {sudo_beam_app, []}},
+  {applications, [kernel, stdlib, crypto, cowboy]}]}.

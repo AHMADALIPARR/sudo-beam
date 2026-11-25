@@ -1,0 +1,3 @@
+build/
+beam/_build/
+.env
