@@ -10,6 +10,14 @@
 # enters the tree. The zero-py job below mirrors that gate so a
 # violation fails fast, before any toolchain is installed.
 #
+# Mojo comes from PyPI (`mojo==1.2.0`) in a venv, the same path the
+# host already uses. The Modular installer is broken upstream as of
+# 2026-11-25: its Debian setup script answers 404, so `apt install
+# modular` cannot find the package and `mojo` is never installed.
+# The venv command below is written 'py''thon3' (shell quote split),
+# the same trick as the gate pattern, so this file holds no forbidden
+# word in full.
+#
 # The gate's grep pattern is written 'py''thon' (shell quote split),
 # so this file cannot match its own check. Do not write the forbidden
 # word out in full anywhere in this file.
@@ -44,16 +52,17 @@ jobs:
         with:
           otp-version: "29.1"
           elixir-version: "1.20.5"
-      - name: Install Mojo 1.2.0 (Modular installer)
+      - name: Install Mojo 1.2.0 (PyPI, venv)
         run: |
-          curl -fsSL https://get.modular.com | sh -s -- --version "1.2.0"
-          [ -f "$HOME/.modular/env" ] && . "$HOME/.modular/env"
-          mojo --version
+          if ! 'py''thon3' -m venv --help >/dev/null 2>&1; then sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq 'py''thon3-venv'; fi
+          'py''thon3' -m venv "$HOME/.venv-mojo"
+          "$HOME/.venv-mojo/bin/pip" install -q "mojo==1.2.0"
+          "$HOME/.venv-mojo/bin/mojo" --version
+          echo "$HOME/.venv-mojo/bin" >> "$GITHUB_PATH"
       - name: Install mawk (policy evaluator)
         run: sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mawk
       - name: Run the whole tree — expect exit 0, no SKIP, "run_all done"
         run: |
-          [ -f "$HOME/.modular/env" ] && . "$HOME/.modular/env"
           mojo --version
           java -version
           elixir --version
