@@ -11,8 +11,8 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Repository | `AHMADALIPARR/sudo-beam`, private, branch `main` |
 | Tree audited | `/home/hatch/workspace/sudo-beam` |
 | Audit date | 2026-11-24 |
-| Tracked source files | 54 |
-| Total source lines (`wc -l`) | 3125 |
+| Tracked source files | 58 |
+| Total source lines (`wc -l`) | 5305 |
 | Build outputs audited | none; `build/`, `sovereign/control/_build`, `sovereign/control/priv`, `.mojo_cache` excluded |
 | Local git repository | none in this tree; history exists only on the remote |
 | Host OS | Ubuntu 24.04.5 LTS, x86_64 |
@@ -28,6 +28,8 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Scripting interpreters in tree | 0 |
 
 ## 1.2 Component map
+
+![System architecture](assets/architecture.svg)
 
 | Component | Runtime | Location | Role |
 |---|---|---|---|
@@ -45,6 +47,8 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Guest provisioning | POSIX Bash | `sovereign/vm/bootstrap.sh` | Toolchain installation inside VirtualBox guest |
 
 ## 1.3 Data flow: WebSocket path
+
+![Request lifecycle](assets/data-flow.svg)
 
 ```
                           +------------------+
@@ -341,9 +345,13 @@ sudo_beam_app (application behaviour, start/2)
 Rules, from `java/src/SudoEmulator.java` (`serve/1`):
 
 - `readInt()` reads the 4-byte length; `EOFException` ends the loop (clean shutdown).
+
 - Length `< 0` or `> 16384` (`MAX_FRAME`) ends the loop; no response is written.
+
 - Short read (`readNBytes(n)` returns fewer than `n`) ends the loop; no response is written.
+
 - Response length is the JSON byte length; written with `writeInt` + `write` + `flush` per frame.
+
 - `stdout` is reserved for framed responses in port mode. The worker writes nothing else to stdout.
 
 ### 1.9.2 KernelPort / Mojo frame (stdin/stdout, `--port`)
@@ -354,17 +362,30 @@ Rules, from `java/src/SudoEmulator.java` (`serve/1`):
 | 4 | 1 | u8 | opcode (request) or status (response) |
 | 5 | M | bytes | payload |
 
-Rules, from `sovereign/kernels/field_ops.mojo`, `sovereign/kernels/holo_verify.mojo`, `sovereign/control/lib/kernel_port.ex`:
+Rules, from `sovereign/kernels/field_ops.mojo`, `sovereign/kernels/holo_verify.mojo`,
+`sovereign/control/lib/kernel_port.ex`:
 
-- Mojo reads the length with libc `read(0)` via `external_call`, looping until exactly 4 bytes or EOF.
+- Mojo reads the length with libc `read(0)` via `external_call`, looping until exactly 4 bytes or
+  EOF.
+
 - Mojo rejects `pkt_len < 1` or `pkt_len > 65536` by breaking the serve loop.
+
 - Mojo reads the packet body with `read_exact`, looping until exactly `pkt_len` bytes.
+
 - Mojo buffers are `List[UInt8]` with `unsafe_ptr()`; no `Pointer.alloc` exists in Mojo 1.2.
-- Elixir sends `<<opcode, payload::binary>>` via `Port.command/2`; `{:packet, 4}` prepends the length.
+
+- Elixir sends `<<opcode, payload::binary>>` via `Port.command/2`; `{:packet, 4}` prepends the
+  length.
+
 - Elixir receives `{port, {:data, <<status, payload::binary>>}}`; the length is already stripped.
+
 - `field_ops` response payload on success is exactly 8 bytes, u64 big-endian.
-- `holo_verify` response payload on status 0/1 is exactly 32 bytes (SHA-256 digest); on status 2 it is an ASCII error string.
-- `KernelPort` enforces one pending call per Port and a 5 s timeout (`@timeout 5_000`, GenServer call timeout `@timeout + 1_000` = 6 s).
+
+- `holo_verify` response payload on status 0/1 is exactly 32 bytes (SHA-256 digest); on status 2 it
+  is an ASCII error string.
+
+- `KernelPort` enforces one pending call per Port and a 5 s timeout (`@timeout 5_000`, GenServer
+  call timeout `@timeout + 1_000` = 6 s).
 
 ### 1.9.3 Field element layout (Goldilocks)
 
@@ -418,7 +439,8 @@ Rules, from `sovereign/kernels/field_ops.mojo`, `sovereign/kernels/holo_verify.m
 | 2 | invalid syntax | request too large, empty command, unclosed quote, newline/NUL in request, > 64 tokens, bad `sudo` usage, bad arity, bad path |
 | 127 | unknown non-elevated command | `command/3` default branch |
 
-Error text is placed in `stderr` with a trailing `\n`; `stdout` is empty on error. `Result.err/2` appends exactly one `\n` to the message.
+Error text is placed in `stderr` with a trailing `\n`; `stdout` is empty on error. `Result.err/2`
+appends exactly one `\n` to the message.
 
 ### 1.10.2 Java worker process exit codes (CLI mode)
 
@@ -493,7 +515,10 @@ Error text is placed in `stderr` with a trailing `\n`; `stdout` is empty on erro
 
 ## 2.1 Summary table
 
-Method: `find . -path ./build -prune -o -path ./sovereign/control/_build -prune -o -path ./sovereign/control/priv -prune -o -path ./.mojo_cache -prune -o -type f -print0 | sort -z | xargs -0 wc -l`. Build outputs excluded. Counts verified 2026-11-24.
+Method:
+`find . -path ./build -prune -o -path ./sovereign/control/_build -prune -o -path ./sovereign/control/priv -prune -o -path ./.mojo_cache -prune -o -type f -print0 | sort -z | xargs -0 wc -l`.
+
+Build outputs excluded. Counts verified 2026-11-24.
 
 | # | Path | Language / runtime | Lines | External dependencies |
 |---|---|---|---|---|
@@ -501,58 +526,65 @@ Method: `find . -path ./build -prune -o -path ./sovereign/control/_build -prune 
 | 2 | `.gitignore` | ignore list | 3 | none |
 | 3 | `Dockerfile` | Dockerfile | 17 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
 | 4 | `Makefile` | GNU Make | 19 | JDK 17+ (`javac`, `java`, `jar`) |
-| 5 | `README.md` | Markdown | 186 | none (pre-rewrite count) |
-| 6 | `awk/policy.awk` | AWK | 6 | POSIX AWK (`/usr/bin/awk`) |
-| 7 | `awk/sudoers` | policy data | 14 | none (read by `awk/policy.awk`) |
-| 8 | `beam/rebar.config` | Erlang config | 2 | Cowboy 2.12.0 |
-| 9 | `beam/src/sudo_beam.app.src` | Erlang config | 6 | Cowboy (application dependency) |
-| 10 | `beam/src/sudo_beam_app.erl` | Erlang | 20 | Cowboy, `crypto` |
-| 11 | `beam/src/sudo_beam_ffi.erl` | Erlang | 19 | JVM (`java`, external process) |
-| 12 | `beam/src/sudo_beam_sup.erl` | Erlang | 5 | none |
-| 13 | `beam/src/sudo_beam_ws.erl` | Erlang | 45 | Cowboy, `crypto` |
-| 14 | `compose.yaml` | YAML / Compose | 16 | Docker Compose; image built from `Dockerfile` |
-| 15 | `java/src/SudoEmulator.java` | Java 17+ | 137 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
-| 16 | `receipts/SHA256SUMS` | checksum list | 51 | none (generated) |
-| 17 | `run_all.sh` | Bash | 83 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
-| 18 | `sovereign/.gitignore` | ignore list | 6 | none |
-| 19 | `sovereign/README.md` | Markdown | 113 | none |
-| 20 | `sovereign/control/config/config.exs` | Elixir config | 18 | none |
-| 21 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
-| 22 | `sovereign/control/lib/application.ex` | Elixir | 22 | none |
-| 23 | `sovereign/control/lib/kernel_port.ex` | Elixir | 235 | Mojo worker binaries (`field_ops`, `holo_verify`) |
-| 24 | `sovereign/control/lib/receipt_store.ex` | Elixir | 55 | none (`:crypto` stdlib) |
-| 25 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 78 | none (`:json` stdlib); network not wired |
-| 26 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 169 | JVM (`java`, external process) |
-| 27 | `sovereign/control/lib/sudo/common.ex` | Elixir | 23 | none |
-| 28 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 10 | none |
-| 29 | `sovereign/control/lib/sudo/email.ex` | Elixir | 55 | none |
-| 30 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 43 | none |
-| 31 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 24 | none |
-| 32 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 14 | none (`Logger` stdlib) |
-| 33 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 17 | none |
-| 34 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 36 | none |
-| 35 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 31 | none |
-| 36 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 19 | none |
-| 37 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 32 | none |
-| 38 | `sovereign/control/lib/sudo/user.ex` | Elixir | 36 | none |
-| 39 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 38 | none |
-| 40 | `sovereign/control/mix.exs` | Elixir config | 31 | none (`deps: []`) |
-| 41 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 78 | none (`:crypto`, `KernelPort`) |
-| 42 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 1 | none |
-| 43 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 68 | none |
-| 44 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 100 | none |
-| 45 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 48 | none |
-| 46 | `sovereign/kernels/build_kernels.sh` | Bash | 14 | `mojo` |
-| 47 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 208 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 48 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 328 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 49 | `sovereign/receipts/SHA256SUMS` | checksum list | 32 | none (generated) |
-| 50 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
-| 51 | `sovereign/run_pipeline.sh` | Bash | 61 | `mojo`, `mix`, `sha256sum` |
-| 52 | `sovereign/vm/bootstrap.sh` | Bash | 68 | apt, Erlang Solutions repo, Modular installer |
-| 53 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
-| 54 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
+| 5 | `README.md` | Markdown | 2073 | none |
+| 6 | `assets/architecture.svg` | SVG | 91 | none |
+| 7 | `assets/data-flow.svg` | SVG | 80 | none |
+| 8 | `assets/terminal-run-all.svg` | SVG | 35 | none |
+| 9 | `assets/wire-framing.svg` | SVG | 87 | none |
+| 10 | `awk/policy.awk` | AWK | 6 | POSIX AWK (`/usr/bin/awk`) |
+| 11 | `awk/sudoers` | policy data | 14 | none (read by `awk/policy.awk`) |
+| 12 | `beam/rebar.config` | Erlang config | 2 | Cowboy 2.12.0 |
+| 13 | `beam/src/sudo_beam.app.src` | Erlang config | 6 | Cowboy (application dependency) |
+| 14 | `beam/src/sudo_beam_app.erl` | Erlang | 20 | Cowboy, `crypto` |
+| 15 | `beam/src/sudo_beam_ffi.erl` | Erlang | 19 | JVM (`java`, external process) |
+| 16 | `beam/src/sudo_beam_sup.erl` | Erlang | 5 | none |
+| 17 | `beam/src/sudo_beam_ws.erl` | Erlang | 45 | Cowboy, `crypto` |
+| 18 | `compose.yaml` | YAML / Compose | 16 | Docker Compose; image built from `Dockerfile` |
+| 19 | `java/src/SudoEmulator.java` | Java 17+ | 137 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
+| 20 | `receipts/SHA256SUMS` | checksum list | 51 | none (generated) |
+| 21 | `run_all.sh` | Bash | 83 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
+| 22 | `sovereign/.gitignore` | ignore list | 6 | none |
+| 23 | `sovereign/README.md` | Markdown | 113 | none |
+| 24 | `sovereign/control/config/config.exs` | Elixir config | 18 | none |
+| 25 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
+| 26 | `sovereign/control/lib/application.ex` | Elixir | 22 | none |
+| 27 | `sovereign/control/lib/kernel_port.ex` | Elixir | 235 | Mojo worker binaries (`field_ops`, `holo_verify`) |
+| 28 | `sovereign/control/lib/receipt_store.ex` | Elixir | 55 | none (`:crypto` stdlib) |
+| 29 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 78 | none (`:json` stdlib); network not wired |
+| 30 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 169 | JVM (`java`, external process) |
+| 31 | `sovereign/control/lib/sudo/common.ex` | Elixir | 23 | none |
+| 32 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 10 | none |
+| 33 | `sovereign/control/lib/sudo/email.ex` | Elixir | 55 | none |
+| 34 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 43 | none |
+| 35 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 24 | none |
+| 36 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 14 | none (`Logger` stdlib) |
+| 37 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 17 | none |
+| 38 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 36 | none |
+| 39 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 31 | none |
+| 40 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 19 | none |
+| 41 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 32 | none |
+| 42 | `sovereign/control/lib/sudo/user.ex` | Elixir | 36 | none |
+| 43 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 38 | none |
+| 44 | `sovereign/control/mix.exs` | Elixir config | 31 | none (`deps: []`) |
+| 45 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 78 | none (`:crypto`, `KernelPort`) |
+| 46 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 1 | none |
+| 47 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 68 | none |
+| 48 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 100 | none |
+| 49 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 48 | none |
+| 50 | `sovereign/kernels/build_kernels.sh` | Bash | 14 | `mojo` |
+| 51 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 208 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 52 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 328 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 53 | `sovereign/receipts/SHA256SUMS` | checksum list | 32 | none (generated) |
+| 54 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
+| 55 | `sovereign/run_pipeline.sh` | Bash | 61 | `mojo`, `mix`, `sha256sum` |
+| 56 | `sovereign/vm/bootstrap.sh` | Bash | 68 | apt, Erlang Solutions repo, Modular installer |
+| 57 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
+| 58 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
 
-Totals: 54 files, 3125 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0 (`beam/rebar.config`), plus the `erlang:27-bookworm` container base image (`Dockerfile`). All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, and Bash.
+Totals: 58 files, 5305 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
+(`beam/rebar.config`), plus the `erlang:27-bookworm` container base image (`Dockerfile`).
+
+All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, and Bash.
 
 ## 2.2 File-by-file audit
 
@@ -602,11 +634,11 @@ Totals: 54 files, 3125 lines. External libraries in the entire tree: exactly one
 | Responsibility | Base-layer build and test entry points. |
 | Dependencies | JDK 17+ (`javac`, `java`, `jar`); rebar3 for `beam` target |
 
-### 2.2.5 `README.md` (186 lines pre-rewrite, Markdown)
+### 2.2.5 `README.md` (2073 lines, Markdown)
 
 | Field | Value |
 |---|---|
-| Content | This file. Title, intro paragraph, layer table, architecture diagram, quick start, BEAM container, command reference, AWK authorization, Erlang FFI, verification, repository layout. |
+| Content | This file. Title, intro paragraph, and the six-section technical specification: architecture and execution pipeline (§1, with architecture and data-flow diagrams), complete file inventory (§2), wire protocols and binary layouts (§3, with framing diagram), measured benchmarks (§4, with terminal render of the real green run), build and reproduction (§5), commit lineage (§6). |
 | Responsibility | Top-level specification entry point for the combined tree. |
 | Dependencies | none |
 
@@ -1134,11 +1166,50 @@ Totals: 54 files, 3125 lines. External libraries in the entire tree: exactly one
 | Responsibility | Live gateway smoke test. JDK stdlib only. |
 | Dependencies | JDK stdlib only (`java.net.URI`, `java.net.http.HttpClient`, `java.net.http.WebSocket`, `java.util.concurrent.*`) |
 
+### 2.2.55 `assets/architecture.svg` (91 lines, SVG)
+
+| Field | Value |
+|---|---|
+| Diagram | System architecture: WebSocket client → Cowboy 2.12.0 gateway → `sudo_beam_ffi.erl` Port owner → Java worker → AWK policy → virtual filesystem, plus Elixir/OTP control plane (supervisor, BeamSession, KernelPort, ReceiptStore, Mojo kernels); every transport labeled |
+| Format | Standalone SVG, no external resources, no scripts, no web fonts |
+| Responsibility | Visual companion to §1.2. Hand-built from the real component map. |
+| Dependencies | none |
+
+### 2.2.56 `assets/data-flow.svg` (80 lines, SVG)
+
+| Field | Value |
+|---|---|
+| Diagram | Request lifecycle flowchart, 9 numbered steps: command in → gateway framing → AWK policy decision (deny branch, exit 1) → worker execution → JSON response → transcript → `holo_verify` check → SHA256SUMS receipts; exit-code contract at the foot |
+| Format | Standalone SVG, no external resources, no scripts, no web fonts |
+| Responsibility | Visual companion to §1.3. Hand-built from the real request path. |
+| Dependencies | none |
+
+### 2.2.57 `assets/terminal-run-all.svg` (35 lines, SVG)
+
+| Field | Value |
+|---|---|
+| Diagram | Dark terminal render of the real `run_all.sh` output: pre-flight OK, all 10 test lines, `Ran 10 tests, 10 passed`, `Result: 5 passed`, release/receipts lines, `run_all done` |
+| Format | Standalone SVG, monospace, no external resources, no scripts, no web fonts |
+| Responsibility | Visual companion to §4. Every line verified verbatim against the real run log. |
+| Dependencies | none |
+
+### 2.2.58 `assets/wire-framing.svg` (87 lines, SVG)
+
+| Field | Value |
+|---|---|
+| Diagram | Byte-layout diagrams: Java worker frame (`u32_be` length + UTF-8 command/JSON), KernelPort frame (`u32_be` + `u8` opcode/status + payload) with opcode table (0x01 add, 0x02 mul, 0x03 neg, 0x10 verify) and status table (0 ok/match, 1 mismatch + actual digest, 2 worker error), Goldilocks `p`, AWK policy 4-column rule layout with example row `operator root id allow` |
+| Format | Standalone SVG, no external resources, no scripts, no web fonts |
+| Responsibility | Visual companion to §3. Hand-built from the real framing code. |
+| Dependencies | none |
+
 # 3. Wire Protocols, Schemas & Binary Layouts
+
+![Wire framing byte layouts](assets/wire-framing.svg)
 
 ## 3.1 Java worker framed IPC (`SudoEmulator` Port mode)
 
-Transport: stdin/stdout byte stream between the Port owner (Erlang `sudo_beam_ffi` or Elixir `Sudo.BeamSession`) and the JVM. Both directions use the same framing.
+Transport: stdin/stdout byte stream between the Port owner (Erlang `sudo_beam_ffi` or Elixir
+`Sudo.BeamSession`) and the JVM. Both directions use the same framing.
 
 ### 3.1.1 Frame layout
 
@@ -1166,7 +1237,8 @@ Transport: stdin/stdout byte stream between the Port owner (Erlang `sudo_beam_ff
 | `command` | string | UTF-8, `String.getBytes(StandardCharsets.UTF_8)` |
 | `argv` | list of strings | each element UTF-8, space-joined by the worker's `tokenize` (see 3.1.5) |
 
-The request is a single line of text: the command, a space, and the arguments, encoded UTF-8. The worker tokenizes it; there is no JSON on the request path.
+The request is a single line of text: the command, a space, and the arguments, encoded UTF-8. The
+worker tokenizes it; there is no JSON on the request path.
 
 ### 3.1.4 Response payload (worker → stdout)
 
@@ -1191,7 +1263,10 @@ Examples (verbatim from `tests/SudoEmulatorTest.java`):
 {"exit":1,"stdout":"","stderr":"policy invalid\n"}
 ```
 
-JSON escaping (from `SudoEmulator.Result.json/0`): `\` → `\\`, `"` → `\"`, newline → `\n`, carriage return → `\r`, tab → `\t`, other control characters (`< 0x20`) → `\uXXXX` (4 lowercase hex digits). The test harness's `stringVal/2` decodes exactly these escapes.
+JSON escaping (from `SudoEmulator.Result.json/0`): `\` → `\\`, `"` → `\"`, newline → `\n`, carriage
+return → `\r`, tab → `\t`, other control characters (`< 0x20`) → `\uXXXX` (4 lowercase hex digits).
+
+The test harness's `stringVal/2` decodes exactly these escapes.
 
 ### 3.1.5 Tokenizer (`SudoEmulator.tokenize/1`)
 
@@ -1204,7 +1279,10 @@ JSON escaping (from `SudoEmulator.Result.json/0`): `\` → `\\`, `"` → `\"`, n
 | Unclosed quote | the rest of the input is one token; no error |
 | Empty input | returns an empty list |
 
-There is no shell: the tokenizer is the only parser. Metacharacters (`;`, `|`, `&`, `>`, `` ` ``, `$`, `*`, `?`, `~`) are literal characters inside tokens; they are never interpreted.
+There is no shell: the tokenizer is the only parser.
+
+Metacharacters (`;`, `|`, `&`, `>`, `` ` ``, `$`, `*`, `?`, `~`) are literal characters inside
+tokens; they are never interpreted.
 
 ## 3.2 Erlang Port FFI (`sudo_beam_ffi` / `{packet, 4}`)
 
@@ -1236,7 +1314,8 @@ Identical framing to 3.1/3.2. Differences:
 
 ### 3.3.1 `run_commands/2` transcript format
 
-`run_commands(pid, commands)` executes each command sequentially, writes a text transcript to `path`:
+`run_commands(pid, commands)` executes each command sequentially, writes a text transcript to
+`path`:
 
 ```
 $ <command>
@@ -1244,11 +1323,17 @@ $ <command>
 <stderr>
 ```
 
-One `$ <command>` line per command, followed by the command's stdout (if non-empty) and stderr (if non-empty). The transcript is written with `File.write!/2` after all commands complete.
+One `$ <command>` line per command, followed by the command's stdout (if non-empty) and stderr (if
+non-empty).
+
+The transcript is written with `File.write!/2` after all commands complete.
 
 ## 3.4 KernelPort Mojo worker protocol
 
-Transport: stdin/stdout byte stream between the Elixir `KernelPort` GenServer and the Mojo worker. Framing is BEAM `{packet, 4}` on the Elixir side and manual 4-byte length read/write on the Mojo side.
+Transport: stdin/stdout byte stream between the Elixir `KernelPort` GenServer and the Mojo worker.
+
+Framing is BEAM `{packet, 4}` on the Elixir side and manual 4-byte length read/write on the Mojo
+side.
 
 ### 3.4.1 Frame layout
 
@@ -1340,7 +1425,8 @@ Nine checks, exact expected values:
 | 8 | `fp_neg` | `0` | `0` |
 | 9 | `fp_neg` | `1` | `P - 1` |
 
-where `P = 18446744069414584321` (2^64 - 2^32 + 1). Failure returns `{:error, {:self_test_failed, expected, got}}`.
+where `P = 18446744069414584321` (2^64
+- 2^32 + 1). Failure returns `{:error, {:self_test_failed, expected, got}}`.
 
 ## 3.5 Goldilocks field arithmetic (`field_ops.mojo`)
 
@@ -1401,7 +1487,11 @@ operator root id|whoami|pwd|ls|cat|mkdir|touch|write|echo allow
 operator service id|whoami|ls|cat allow
 ```
 
-Expanded: `operator root id allow`, `operator root whoami allow`, `operator root pwd allow`, `operator root ls allow`, `operator root cat allow`, `operator root mkdir allow`, `operator root touch allow`, `operator root write allow`, `operator root echo allow`, `operator service id allow`, `operator service whoami allow`, `operator service ls allow`, `operator service cat allow`.
+Expanded: `operator root id allow`, `operator root whoami allow`, `operator root pwd allow`,
+`operator root ls allow`, `operator root cat allow`, `operator root mkdir allow`,
+`operator root touch allow`, `operator root write allow`, `operator root echo allow`,
+`operator service id allow`, `operator service whoami allow`, `operator service ls allow`,
+`operator service cat allow`.
 
 ## 3.8 WebSocket protocol (`sudo_beam_ws` / Cowboy)
 
@@ -1538,7 +1628,14 @@ All 14 stub modules share the contract in `Sudo.Common`:
 
 # 4. Authentic Benchmark Suite & Empirical Telemetry
 
-All measurements below were taken in the audit session, 2026-11-24, on the audit host. No number is carried over from an earlier session; every figure is the output of a command run in this session. Commands that were not run are marked `UNMEASURED`.
+![Terminal: full run_all.sh output](assets/terminal-run-all.svg)
+
+All measurements below were taken in the audit session, 2026-11-24, on the audit host.
+
+No number is carried over from an earlier session; every figure is the output of a command run in
+this session.
+
+Commands that were not run are marked `UNMEASURED`.
 
 ## 4.1 Measurement environment
 
@@ -1614,7 +1711,10 @@ Result: exit 0, 5 passed.
 | Tests passed | 5 |
 | Tests failed | 0 |
 
-Tests: `sha256 vectors: holo_verify matches :crypto`; `sha256 random data: holo_verify matches :crypto`; `framing round-trip: u32_be length + opcode + payload`; `fp edge: (p-1)*(p-1) mod p == 1`; `field_ops self-test passes`.
+Tests: `sha256 vectors: holo_verify matches :crypto`;
+`sha256 random data: holo_verify matches :crypto`;
+`framing round-trip: u32_be length + opcode + payload`; `fp edge: (p-1)*(p-1) mod p == 1`;
+`field_ops self-test passes`.
 
 ## 4.4 Mojo kernel self-tests
 
@@ -1661,7 +1761,8 @@ Commands (working directory `sovereign/control/priv`):
 ./holo_verify /tmp/million_a cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0
 ```
 
-The 1,000,000-byte input was generated with `head -c 1000000 /dev/zero | tr '\0' 'a'` and its digest cross-checked against `:crypto` in the ExUnit suite (section 4.3).
+The 1,000,000-byte input was generated with `head -c 1000000 /dev/zero | tr '\0' 'a'` and its digest
+cross-checked against `:crypto` in the ExUnit suite (section 4.3).
 
 | Input | Size (bytes) | Exit | Output | Wall clock | Peak RSS |
 |---|---|---|---|---|---|
@@ -1679,11 +1780,15 @@ Error cases:
 
 ## 4.6 BeamSession latency
 
-Method: 50 sequential requests per command via `mix run` (working directory `sovereign/control`), timed with `:os.system_time(:microsecond)` around each `Sudo.BeamSession.request/3` call. Log: `/tmp/beam_latency.log` (audit session).
+Method: 50 sequential requests per command via `mix run` (working directory `sovereign/control`),
+timed with `:os.system_time(:microsecond)` around each `Sudo.BeamSession.request/3` call.
+
+Log: `/tmp/beam_latency.log` (audit session).
 
 ### 4.6.1 Mixed workload (50 requests, cold start included)
 
-Commands cycled: `whoami`, `sudo id`, `echo`. Includes cold-start warm-up of the first 2 requests (497,664 µs, 171,636 µs).
+Commands cycled: `whoami`, `sudo id`, `echo`. Includes cold-start warm-up of the first 2 requests
+(497,664 µs, 171,636 µs).
 
 | Metric | Value |
 |---|---|
@@ -1705,7 +1810,9 @@ Commands cycled: `whoami`, `sudo id`, `echo`. Includes cold-start warm-up of the
 | `sudo id` | 2114 | 58322 | 5888 | 2711 | 39524 | 58322 |
 | `echo` | 40 | 1724 | 427 | 143 | 1430 | 1724 |
 
-Interpretation (from the implementation, not from a profiler): `whoami` and `echo` are in-process Java dispatches with no policy spawn; `sudo id` spawns an AWK process per elevated command (`SudoEmulator.allowed/2` runs `awk -f policy.awk`), which dominates its latency and variance.
+Interpretation (from the implementation, not from a profiler): `whoami` and `echo` are in-process
+Java dispatches with no policy spawn; `sudo id` spawns an AWK process per elevated command
+(`SudoEmulator.allowed/2` runs `awk -f policy.awk`), which dominates its latency and variance.
 
 ## 4.7 UNMEASURED
 
@@ -1771,7 +1878,11 @@ export SUDO_BEAM_TOKEN='<at least 16 characters>'
 make smoke
 ```
 
-Without a running gateway on `127.0.0.1:8080` and without `SUDO_BEAM_TOKEN`, `make smoke` exits 2 with `SUDO_BEAM_TOKEN not set` on stderr (if the variable is unset) or fails to connect (if the gateway is not running). This was not run in the audit session; see 4.7.
+Without a running gateway on `127.0.0.1:8080` and without `SUDO_BEAM_TOKEN`, `make smoke` exits 2
+with `SUDO_BEAM_TOKEN not set` on stderr (if the variable is unset) or fails to connect (if the
+gateway is not running).
+
+This was not run in the audit session; see 4.7.
 
 ### 5.2.2 Sovereign layer
 
@@ -1810,12 +1921,20 @@ Without a running gateway on `127.0.0.1:8080` and without `SUDO_BEAM_TOKEN`, `ma
 Reproduction steps for the audit host (Ubuntu 24.04.5 LTS, x86_64):
 
 1. Install JDK 21, Mojo 1.2.0, Erlang/OTP 29, Elixir 1.20.5, mawk, GNU Make, coreutils.
+
 2. `cd /home/hatch/workspace/sudo-beam`
+
 3. `make test` — expect `Ran 10 tests, 10 passed`, exit 0.
+
 4. `cd sovereign && bash kernels/build_kernels.sh` — expect `kernels built: ...`, exit 0.
+
 5. `cd control && mix test` — expect `5 tests, 0 failures`, exit 0.
-6. `cd .. && bash run_pipeline.sh` — expect `== pipeline: done`, exit 0; `sha256sum -c receipts/SHA256SUMS` — expect all entries `OK`.
-7. `cd .. && bash run_all.sh` — expect `== run_all: done`, exit 0; `sha256sum -c receipts/SHA256SUMS` — expect all 51 entries `OK`.
+
+6. `cd .. && bash run_pipeline.sh` — expect `== pipeline: done`, exit 0;
+   `sha256sum -c receipts/SHA256SUMS` — expect all entries `OK`.
+
+7. `cd .. && bash run_all.sh` — expect `== run_all: done`, exit 0;
+   `sha256sum -c receipts/SHA256SUMS` — expect all 51 entries `OK`.
 
 Determinism properties:
 
@@ -1849,7 +1968,8 @@ Target: VirtualBox guest, Ubuntu. Run once per guest.
 
 ## 5.5 Zero-Python gate
 
-`run_all.sh` fails closed before any compilation if a `.py` file or a Python reference enters the tree:
+`run_all.sh` fails closed before any compilation if a `.py` file or a Python reference enters the
+tree:
 
 ```bash
 if find "$ROOT" -name '*.py' | grep -q .; then
@@ -1866,11 +1986,20 @@ fi
 log "pre-flight: zero Python OK"
 ```
 
-The grep pattern is written `'py''thon'` so the gate cannot match its own line. Verified in the audit session: the tree contains zero `.py` files, zero `requirements`/`Pipfile`/`pyproject` files, and the only case-insensitive matches for the word are the gate's own comments in `run_all.sh`.
+The grep pattern is written `'py''thon'` so the gate cannot match its own line.
+
+Verified in the audit session: the tree contains zero `.py` files, zero
+`requirements`/`Pipfile`/`pyproject` files, and the only case-insensitive matches for the word are
+the gate's own comments in `run_all.sh`.
 
 # 6. Version Control & Commit Lineage
 
-Remote: `https://github.com/AHMADALIPARR/sudo-beam`, private, branch `main`. Owner: `AHMADALIPARR`. There is no local git repo in this working copy (the repo was pushed to GitHub via API); the lineage below comes from the push outputs, not from a local `git log`.
+Remote: `https://github.com/AHMADALIPARR/sudo-beam`, private, branch `main`.
+
+Owner: `AHMADALIPARR`.
+
+There is no local git repo in this working copy (the repo was pushed to GitHub via API); the lineage
+below comes from the push outputs, not from a local `git log`.
 
 ## 6.1 Commit table
 
@@ -1886,29 +2015,51 @@ Remote: `https://github.com/AHMADALIPARR/sudo-beam`, private, branch `main`. Own
 ### 2026-11-24 — Seed
 
 - Repository created as private `AHMADALIPARR/sudo-beam`.
+
 - Seed commit `3aa0a451`: `README.md` only.
 
 ### 2026-11-24 — Virtual sudo base + sovereign layer
 
 - Commit `cd49567a`: 53 files.
-- Base: Ahmad's uploaded sudo-beam zip (virtual sudo: Java worker, AWK policy, Erlang/Cowboy gateway), byte-identical to the upload.
+
+- Base: Ahmad's uploaded sudo-beam zip (virtual sudo: Java worker, AWK policy, Erlang/Cowboy
+  gateway), byte-identical to the upload.
+
 - Sovereign-beam-mojo layered on top as `sovereign/` (sources only; no `.git`, `_build`, `priv`).
+
 - New bridge: `Sudo.BeamSession` (Elixir GenServer driving the Java worker over Port `{packet, 4}`).
-- Top-level `run_all.sh` exits 0: `make test` 10/10, sovereign pipeline green, live BeamSession round-trip with transcript verified by `holo_verify`, combined receipts 50 files OK.
+
+- Top-level `run_all.sh` exits 0: `make test` 10/10, sovereign pipeline green, live BeamSession
+  round-trip with transcript verified by `holo_verify`, combined receipts 50 files OK.
+
 - Build outputs (`build/`, `_build/`, `priv/`) excluded from every push.
 
 ### 2026-11-24 — Strip Python
 
 - Commit `9e35656f`: 54 files, 0 `.py`.
-- Deleted: `tests/test_port.py`, `tests/ws_smoke.py`, `kernels/tests/verify_sha256_and_framing.py` (both trees).
-- Replaced with JDK-stdlib-only Java harness `tests/SudoEmulatorTest.java` (same 10 cases, `make test` 10/10), Java WS smoke `tests/WsSmoke.java` (java.net.http, `make smoke`), Elixir ExUnit `sovereign/control/test/sha256_and_framing_test.exs` (5 vectors + 50 random vs `:crypto`, framing, fp edge; `mix test` 5 passed, wired into `run_pipeline.sh`).
-- Zero-dep result: `mix.exs` `deps: []`; the only external library in the whole tree is Cowboy 2.12.0 in the user's own uploaded `beam/rebar.config`; everything else is JDK/OTP/Mojo stdlib + AWK.
+
+- Deleted: `tests/test_port.py`, `tests/ws_smoke.py`, `kernels/tests/verify_sha256_and_framing.py`
+  (both trees).
+
+- Replaced with JDK-stdlib-only Java harness `tests/SudoEmulatorTest.java` (same 10 cases,
+  `make test` 10/10), Java WS smoke `tests/WsSmoke.java` (java.net.http, `make smoke`), Elixir
+  ExUnit `sovereign/control/test/sha256_and_framing_test.exs` (5 vectors + 50 random vs `:crypto`,
+  framing, fp edge; `mix test` 5 passed, wired into `run_pipeline.sh`).
+
+- Zero-dep result: `mix.exs` `deps: []`; the only external library in the whole tree is Cowboy
+  2.12.0 in the user's own uploaded `beam/rebar.config`; everything else is JDK/OTP/Mojo stdlib +
+  AWK.
 
 ### 2026-11-24 — Zero-Python pre-flight gate
 
 - Commit `dc7d4645`: 54 files.
-- `run_all.sh` fails closed (exit 1) before any compilation if a `.py` file or a Python reference enters the tree.
-- Proven both ways with probes (a `.py` file and a file containing the word both stop the pipeline); clean tree runs green.
+
+- `run_all.sh` fails closed (exit
+  1) before any compilation if a `.py` file or a Python reference enters the tree.
+
+- Proven both ways with probes (a `.py` file and a file containing the word both stop the pipeline);
+  clean tree runs green.
+
 - The gate's own grep pattern is written `'py''thon'` so it cannot match its own line.
 
 ## 6.3 Known stale records (not edited; code is authoritative)

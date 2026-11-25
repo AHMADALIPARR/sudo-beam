@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 680" width="920" height="680" role="img" aria-label="Terminal output of a real run_all.sh run">
+  <title>run_all.sh — real terminal output</title>
+  <rect x="0" y="0" width="920" height="680" rx="10" fill="#0d1117"/>
+  <circle cx="28" cy="26" r="7" fill="#ff5f57"/>
+  <circle cx="52" cy="26" r="7" fill="#febc2e"/>
+  <circle cx="76" cy="26" r="7" fill="#28c840"/>
+  <text x="110" y="31" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#8b949e">run_all.sh — real output · 2026-11-24</text>
+  <line x1="0" y1="48" x2="920" y2="48" stroke="#21262d" stroke-width="1"/>
+  <g font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="14" fill="#e6edf3">
+    <text x="24" y="76" fill="#3fb950">$ bash run_all.sh</text>
+    <text x="24" y="100"><tspan fill="#58a6ff">[run_all]</tspan><tspan> pre-flight: zero Python OK</tspan></text>
+    <text x="24" y="124"><tspan fill="#58a6ff">[run_all]</tspan><tspan> make test (Java/AWK, base)</tspan></text>
+    <text x="24" y="148">test_identity ... ok</text>
+    <text x="24" y="172">test_policy ... ok</text>
+    <text x="24" y="196">test_filesystem ... ok</text>
+    <text x="24" y="220">test_isolation ... ok</text>
+    <text x="24" y="244">test_guest ... ok</text>
+    <text x="24" y="268">test_no_shell ... ok</text>
+    <text x="24" y="292">test_invalid_policy ... ok</text>
+    <text x="24" y="316">test_last_rule_wins ... ok</text>
+    <text x="24" y="340">test_unicode_and_json ... ok</text>
+    <text x="24" y="364">test_limits ... ok</text>
+    <text x="24" y="412" fill="#3fb950" font-weight="700">Ran 10 tests, 10 passed</text>
+    <text x="24" y="436" fill="#3fb950">OK</text>
+    <text x="24" y="460"><tspan fill="#58a6ff">[run_all]</tspan><tspan> sovereign pipeline</tspan></text>
+    <text x="24" y="484"><tspan fill="#58a6ff">[pipeline]</tspan><tspan> BEAM tests</tspan></text>
+    <text x="24" y="508" fill="#3fb950" font-weight="700">Result: 5 passed</text>
+    <text x="24" y="532"><tspan fill="#58a6ff">[pipeline]</tspan><tspan> BEAM release OK</tspan></text>
+    <text x="24" y="556"><tspan fill="#58a6ff">[pipeline]</tspan><tspan> sha256sum -c OK</tspan></text>
+    <text x="24" y="580"><tspan fill="#58a6ff">[pipeline]</tspan><tspan> receipts: /home/hatch/workspace/sudo-beam/sovereign/receipts/SHA256SUMS (32 files)</tspan></text>
+    <text x="24" y="604"><tspan fill="#58a6ff">[pipeline]</tspan><tspan> pipeline done</tspan></text>
+    <text x="24" y="628"><tspan fill="#58a6ff">[run_all]</tspan><tspan> receipts: /home/hatch/workspace/sudo-beam/receipts/SHA256SUMS (51 files)</tspan></text>
+    <text x="24" y="652"><tspan fill="#58a6ff">[run_all]</tspan><tspan> run_all done</tspan></text>
+  </g>
+</svg>

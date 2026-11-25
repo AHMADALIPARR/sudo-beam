@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 690" width="980" height="690" role="img" aria-label="sudo-beam system architecture diagram">
+  <title>sudo-beam system architecture</title>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#57606a"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="980" height="690" fill="#ffffff"/>
+  <text x="20" y="36" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#24292f">sudo-beam — system architecture</text>
+  <text x="20" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">WebSocket client → Cowboy gateway → Erlang Port → Java worker → AWK policy → virtual FS</text>
+
+  <!-- WebSocket client -->
+  <rect x="20" y="80" width="160" height="76" rx="6" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="100" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">WebSocket client</text>
+  <text x="100" y="128" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">optional token</text>
+  <text x="100" y="146" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#24292f" text-anchor="middle">SUDO_BEAM_TOKEN</text>
+  <line x1="180" y1="118" x2="240" y2="118" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="210" y="104" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">WebSocket</text>
+
+  <!-- Cowboy gateway -->
+  <rect x="240" y="80" width="280" height="76" rx="6" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="380" y="106" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">Cowboy 2.12.0 WebSocket gateway</text>
+  <text x="380" y="126" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">sudo_beam_ws.erl · sudo_beam_app.erl</text>
+  <text x="380" y="144" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">sudo_beam_sup.erl</text>
+  <line x1="380" y1="156" x2="380" y2="180" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="388" y="174" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a">open_port</text>
+
+  <!-- FFI / Port owner -->
+  <rect x="240" y="180" width="260" height="66" rx="6" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="370" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">sudo_beam_ffi.erl — Port owner</text>
+  <text x="370" y="224" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">{packet, 4} · -Xms8m -Xmx32m</text>
+  <line x1="500" y1="213" x2="600" y2="213" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="550" y="200" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">Port {packet, 4}</text>
+
+  <!-- Java worker -->
+  <rect x="600" y="180" width="260" height="84" rx="6" fill="#e6f4ea" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="730" y="206" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">Java worker</text>
+  <text x="730" y="224" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">SudoEmulator.java</text>
+  <text x="730" y="242" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">stdin/stdout · u32_be + UTF-8</text>
+  <line x1="730" y1="264" x2="730" y2="290" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="738" y="282" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a">sudo</text>
+
+  <!-- AWK policy -->
+  <rect x="600" y="290" width="260" height="84" rx="6" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="730" y="316" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">AWK policy</text>
+  <text x="730" y="334" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">policy.awk + sudoers</text>
+  <text x="730" y="352" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">caller target command verdict</text>
+  <line x1="730" y1="374" x2="730" y2="400" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Virtual filesystem -->
+  <rect x="600" y="400" width="260" height="84" rx="6" fill="#e6f4ea" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="730" y="426" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f" text-anchor="middle">Virtual filesystem</text>
+  <text x="730" y="444" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">root=0 · operator=1000</text>
+  <text x="730" y="462" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">guest=1001 · service=1002</text>
+
+  <!-- Elixir control plane -->
+  <rect x="20" y="300" width="460" height="240" rx="8" fill="#f6f8fa" stroke="#57606a" stroke-width="1.5"/>
+  <text x="40" y="326" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f">Elixir control plane — sovereign/control (OTP)</text>
+  <rect x="40" y="340" width="420" height="48" rx="6" fill="#ffffff" stroke="#57606a" stroke-width="1.5"/>
+  <text x="250" y="362" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">Application supervisor (application.ex)</text>
+  <text x="250" y="378" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">owns ReceiptStore + KernelPort</text>
+  <line x1="140" y1="388" x2="140" y2="404" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="360" y1="388" x2="360" y2="404" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="40" y="404" width="200" height="64" rx="6" fill="#ffffff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="140" y="428" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">Sudo.BeamSession</text>
+  <text x="140" y="446" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">GenServer → Java worker</text>
+  <text x="140" y="462" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">Port {packet, 4}</text>
+  <rect x="260" y="404" width="200" height="64" rx="6" fill="#ffffff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="360" y="428" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">KernelPort</text>
+  <text x="360" y="446" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">GenServer → Mojo kernels</text>
+  <text x="360" y="462" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">u32_be + opcode framing</text>
+  <line x1="140" y1="468" x2="140" y2="484" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="360" y1="468" x2="360" y2="484" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="40" y="484" width="200" height="44" rx="6" fill="#ffffff" stroke="#57606a" stroke-width="1.5"/>
+  <text x="140" y="502" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">ReceiptStore</text>
+  <text x="140" y="518" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">transcripts · SHA256SUMS</text>
+  <rect x="260" y="484" width="200" height="44" rx="6" fill="#ffffff" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="360" y="502" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">Mojo kernels</text>
+  <text x="360" y="518" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">field_ops · holo_verify</text>
+
+  <!-- BeamSession drives the same Java worker -->
+  <polyline points="480,436 560,436 560,222 600,222" fill="none" stroke="#57606a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="520" y="454" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">Port {packet, 4}</text>
+
+  <!-- Measured results -->
+  <rect x="20" y="560" width="940" height="110" rx="6" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+  <text x="40" y="586" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#24292f">Measured in this session — run_all.sh, 2026-11-24</text>
+  <text x="40" y="608" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">field_ops self-test: PASS (9 checks)</text>
+  <text x="40" y="628" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">holo_verify empty file: VERIFIED e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</text>
+  <text x="40" y="648" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">holo_verify 1,000,000×"a": VERIFIED cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0</text>
+</svg>

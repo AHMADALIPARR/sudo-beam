@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 800" width="980" height="800" role="img" aria-label="sudo-beam wire framing and byte layout diagrams">
+  <title>sudo-beam wire framing and byte layouts</title>
+  <rect x="0" y="0" width="980" height="800" fill="#ffffff"/>
+  <text x="20" y="36" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#24292f">sudo-beam — wire framing &amp; layouts</text>
+
+  <!-- Section A: Java worker frame -->
+  <text x="40" y="72" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#24292f">A · Java worker frame — stdin / stdout</text>
+  <text x="40" y="92" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">Request: command in. Response: JSON result out. All lengths are unsigned 32-bit big-endian.</text>
+  <rect x="40" y="104" width="150" height="46" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="115" y="124" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u32_be length</text>
+  <text x="115" y="142" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">bytes 0–3</text>
+  <rect x="190" y="104" width="750" height="46" fill="#f6f8fa" stroke="#57606a" stroke-width="1.5"/>
+  <text x="565" y="124" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">UTF-8 command</text>
+  <text x="565" y="142" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">bytes 4 – (4 + N − 1) · N ≤ 16 KiB</text>
+  <rect x="40" y="166" width="150" height="46" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="115" y="186" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u32_be length</text>
+  <text x="115" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">bytes 0–3</text>
+  <rect x="190" y="166" width="750" height="46" fill="#f6f8fa" stroke="#57606a" stroke-width="1.5"/>
+  <text x="565" y="186" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">UTF-8 JSON</text>
+  <text x="565" y="204" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="12" fill="#57606a" text-anchor="middle">{"exit": N, "stdout": "...", "stderr": "..."}</text>
+  <text x="40" y="238" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">Exit codes: 0 ok · 1 permission/operation failure · 2 invalid syntax · 127 unknown command</text>
+
+  <!-- Section B: KernelPort frame -->
+  <text x="40" y="282" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#24292f">B · KernelPort frame — Elixir Port to Mojo kernels</text>
+  <text x="40" y="302" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">Request: length + opcode + payload. Response: length + status + payload. Erlang {packet, 4} strips the length on receipt.</text>
+  <rect x="40" y="314" width="150" height="46" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="115" y="334" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u32_be length</text>
+  <text x="115" y="352" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">bytes 0–3</text>
+  <rect x="190" y="314" width="120" height="46" fill="#e6f4ea" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="250" y="334" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u8 opcode</text>
+  <text x="250" y="352" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">byte 4</text>
+  <rect x="310" y="314" width="630" height="46" fill="#f6f8fa" stroke="#57606a" stroke-width="1.5"/>
+  <text x="625" y="334" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">payload</text>
+  <text x="625" y="352" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">field_ops: 16 bytes (2 × u64-be) · holo_verify: path bytes</text>
+  <rect x="40" y="376" width="150" height="46" fill="#ddf4ff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="115" y="396" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u32_be length</text>
+  <text x="115" y="414" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">bytes 0–3</text>
+  <rect x="190" y="376" width="120" height="46" fill="#e6f4ea" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="250" y="396" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">u8 status</text>
+  <text x="250" y="414" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">byte 4</text>
+  <rect x="310" y="376" width="630" height="46" fill="#f6f8fa" stroke="#57606a" stroke-width="1.5"/>
+  <text x="625" y="396" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">payload</text>
+  <text x="625" y="414" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">digest hex (status 0) · actual digest (status 1) · error text (status 2)</text>
+
+  <!-- Opcode table -->
+  <text x="40" y="460" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f">Opcodes (request byte 4)</text>
+  <text x="40" y="486" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">0x01</text>
+  <text x="110" y="486" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">fp_add</text>
+  <text x="230" y="486" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#57606a">&lt;&lt;a::64-big, b::64-big&gt;&gt;</text>
+  <text x="40" y="510" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">0x02</text>
+  <text x="110" y="510" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">fp_mul</text>
+  <text x="230" y="510" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#57606a">&lt;&lt;a::64-big, b::64-big&gt;&gt;</text>
+  <text x="40" y="534" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">0x03</text>
+  <text x="110" y="534" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">fp_neg</text>
+  <text x="230" y="534" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#57606a">&lt;&lt;a::64-big&gt;&gt;</text>
+  <text x="40" y="558" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">0x10</text>
+  <text x="110" y="558" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">holo_verify</text>
+  <text x="230" y="558" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#57606a">path bytes</text>
+
+  <!-- Status table -->
+  <text x="540" y="460" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#24292f">Status codes (response byte 4)</text>
+  <text x="540" y="486" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">0</text>
+  <text x="580" y="486" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">ok / match</text>
+  <text x="540" y="510" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">1</text>
+  <text x="580" y="510" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">mismatch — payload is the actual digest</text>
+  <text x="540" y="534" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f">2</text>
+  <text x="580" y="534" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">worker error</text>
+  <text x="40" y="596" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">field_ops: Goldilocks field p = 2^64 − 2^32 + 1 = 18446744069414584321</text>
+
+  <!-- Section C: AWK policy rule -->
+  <text x="40" y="646" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#24292f">C · AWK policy rule — awk/sudoers (4 whitespace-separated columns)</text>
+  <rect x="40" y="662" width="225" height="46" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="152" y="682" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">caller</text>
+  <text x="152" y="700" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">column 1 · e.g. operator</text>
+  <rect x="265" y="662" width="225" height="46" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="377" y="682" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">target</text>
+  <text x="377" y="700" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">column 2 · e.g. root</text>
+  <rect x="490" y="662" width="225" height="46" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="602" y="682" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">command</text>
+  <text x="602" y="700" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">column 3 · e.g. id</text>
+  <rect x="715" y="662" width="225" height="46" fill="#fff8c5" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="827" y="682" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#24292f" text-anchor="middle">verdict</text>
+  <text x="827" y="700" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#57606a" text-anchor="middle">column 4 · allow | deny</text>
+  <text x="40" y="736" font-family="ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace" font-size="13" fill="#24292f">example:  operator  root  id  allow</text>
+  <text x="40" y="762" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">Last exact match wins · default deny · invalid row → deny, exit 2</text>
+  <text x="40" y="788" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#24292f">Limits: 16 KiB frame · 256 filesystem nodes · 4 KiB per file</text>
+</svg>
