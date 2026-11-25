@@ -1,3 +1,19 @@
+# Copyright (C) 2026 AHMADALIPARR
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # field_ops.mojo — Goldilocks Fp arithmetic (IMPLEMENTED) + Port worker
 #
 # p = 2^64 - 2^32 + 1 = 18446744069414584321 (public mathematics).

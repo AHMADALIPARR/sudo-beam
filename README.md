@@ -1,3 +1,21 @@
+<!--
+Copyright (C) 2026 AHMADALIPARR
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 # SUDO-BEAM
 
 [![run_all.sh](https://img.shields.io/badge/run_all.sh-PASS-brightgreen)](https://github.com/AHMADALIPARR/sudo-beam)
@@ -17,8 +35,8 @@ A virtual `sudo` command processor written in Java with AWK authorization and an
 | Repository | `AHMADALIPARR/sudo-beam`, private, branch `main` |
 | Tree audited | `/home/hatch/workspace/sudo-beam` |
 | Audit date | 2026-11-24 |
-| Tracked source files | 59 |
-| Total source lines (`wc -l`) | 5512 |
+| Tracked source files | 60 |
+| Total source lines (`wc -l`) | 7080 |
 | Build outputs audited | none; `build/`, `sovereign/control/_build`, `sovereign/control/priv`, `.mojo_cache` excluded |
 | Local git repository | none in this tree; history exists only on the remote |
 | Host OS | Ubuntu 24.04.5 LTS, x86_64 |
@@ -528,74 +546,75 @@ Build outputs excluded. Counts verified 2026-11-25.
 
 | # | Path | Language / runtime | Lines | External dependencies |
 |---|---|---|---|---|
-| 1 | `.dockerignore` | ignore list | 3 | none |
-| 2 | `.gitignore` | ignore list | 3 | none |
-| 3 | `Dockerfile` | Dockerfile | 17 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
-| 4 | `Makefile` | GNU Make | 19 | JDK 17+ (`javac`, `java`, `jar`) |
-| 5 | `README.md` | Markdown | 2094 | none |
-| 6 | `assets/architecture.svg` | SVG | 91 | none |
-| 7 | `assets/data-flow.svg` | SVG | 80 | none |
-| 8 | `assets/terminal-run-all.svg` | SVG | 35 | none |
-| 9 | `assets/wire-framing.svg` | SVG | 87 | none |
-| 10 | `awk/policy.awk` | AWK | 6 | POSIX AWK (`/usr/bin/awk`) |
-| 11 | `awk/sudoers` | policy data | 14 | none (read by `awk/policy.awk`) |
-| 12 | `beam/rebar.config` | Erlang config | 2 | Cowboy 2.12.0 |
-| 13 | `beam/src/sudo_beam.app.src` | Erlang config | 6 | Cowboy (application dependency) |
-| 14 | `beam/src/sudo_beam_app.erl` | Erlang | 20 | Cowboy, `crypto` |
-| 15 | `beam/src/sudo_beam_ffi.erl` | Erlang | 19 | JVM (`java`, external process) |
-| 16 | `beam/src/sudo_beam_sup.erl` | Erlang | 5 | none |
-| 17 | `beam/src/sudo_beam_ws.erl` | Erlang | 45 | Cowboy, `crypto` |
-| 18 | `compose.yaml` | YAML / Compose | 16 | Docker Compose; image built from `Dockerfile` |
-| 19 | `java/src/SudoEmulator.java` | Java 17+ | 137 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
-| 20 | `receipts/SHA256SUMS` | checksum list | 56 | none (generated) |
-| 21 | `run_all.sh` | Bash | 83 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
-| 22 | `sovereign/.gitignore` | ignore list | 6 | none |
-| 23 | `sovereign/README.md` | Markdown | 113 | none |
-| 24 | `sovereign/control/config/config.exs` | Elixir config | 18 | none |
-| 25 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
-| 26 | `sovereign/control/lib/application.ex` | Elixir | 22 | none |
-| 27 | `sovereign/control/lib/kernel_port.ex` | Elixir | 235 | Mojo worker binaries (`field_ops`, `holo_verify`) |
-| 28 | `sovereign/control/lib/receipt_store.ex` | Elixir | 55 | none (`:crypto` stdlib) |
-| 29 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 78 | none (`:json` stdlib); network not wired |
-| 30 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 169 | JVM (`java`, external process) |
-| 31 | `sovereign/control/lib/sudo/common.ex` | Elixir | 23 | none |
-| 32 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 10 | none |
-| 33 | `sovereign/control/lib/sudo/email.ex` | Elixir | 55 | none |
-| 34 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 43 | none |
-| 35 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 24 | none |
-| 36 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 14 | none (`Logger` stdlib) |
-| 37 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 17 | none |
-| 38 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 36 | none |
-| 39 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 31 | none |
-| 40 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 19 | none |
-| 41 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 32 | none |
-| 42 | `sovereign/control/lib/sudo/user.ex` | Elixir | 36 | none |
-| 43 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 38 | none |
-| 44 | `sovereign/control/mix.exs` | Elixir config | 31 | none (`deps: []`) |
-| 45 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 78 | none (`:crypto`, `KernelPort`) |
-| 46 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 1 | none |
-| 47 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 68 | none |
-| 48 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 100 | none |
-| 49 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 48 | none |
-| 50 | `sovereign/kernels/build_kernels.sh` | Bash | 24 | `mojo` |
-| 51 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 208 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 52 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 328 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
-| 53 | `sovereign/receipts/SHA256SUMS` | checksum list | 33 | none (generated) |
-| 54 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
-| 55 | `sovereign/run_pipeline.sh` | Bash | 61 | `mojo`, `mix`, `sha256sum` |
-| 56 | `sovereign/vm/bootstrap.sh` | Bash | 119 | apt, Erlang Solutions repo, host-share mojo tarball |
-| 57 | `sovereign/vm/build_mojo_tarball.sh` | Bash | 119 | `bazelw`, `tar`, `zstd`, `sha256sum` |
-| 58 | `tests/SudoEmulatorTest.java` | Java 17+ | 246 | JDK stdlib only |
-| 59 | `tests/WsSmoke.java` | Java 17+ | 114 | JDK stdlib only (`java.net.http`) |
+| 1 | `.dockerignore` | ignore list | 19 | none |
+| 2 | `.gitignore` | ignore list | 19 | none |
+| 3 | `Dockerfile` | Dockerfile | 33 | `erlang:27-bookworm` base image; `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` (apt) |
+| 4 | `LICENSE` | License text | 661 | none |
+| 5 | `Makefile` | GNU Make | 35 | JDK 17+ (`javac`, `java`, `jar`) |
+| 6 | `README.md` | Markdown | 2121 | none |
+| 7 | `assets/architecture.svg` | SVG | 109 | none |
+| 8 | `assets/data-flow.svg` | SVG | 98 | none |
+| 9 | `assets/terminal-run-all.svg` | SVG | 53 | none |
+| 10 | `assets/wire-framing.svg` | SVG | 105 | none |
+| 11 | `awk/policy.awk` | AWK | 22 | POSIX AWK (`/usr/bin/awk`) |
+| 12 | `awk/sudoers` | policy data | 30 | none (read by `awk/policy.awk`) |
+| 13 | `beam/rebar.config` | Erlang config | 18 | Cowboy 2.12.0 |
+| 14 | `beam/src/sudo_beam.app.src` | Erlang config | 22 | Cowboy (application dependency) |
+| 15 | `beam/src/sudo_beam_app.erl` | Erlang | 36 | Cowboy, `crypto` |
+| 16 | `beam/src/sudo_beam_ffi.erl` | Erlang | 35 | JVM (`java`, external process) |
+| 17 | `beam/src/sudo_beam_sup.erl` | Erlang | 21 | none |
+| 18 | `beam/src/sudo_beam_ws.erl` | Erlang | 61 | Cowboy, `crypto` |
+| 19 | `compose.yaml` | YAML / Compose | 32 | Docker Compose; image built from `Dockerfile` |
+| 20 | `java/src/SudoEmulator.java` | Java 17+ | 153 | JDK stdlib only (`java.io`, `java.nio`, `java.util`) |
+| 21 | `receipts/SHA256SUMS` | checksum list | 56 | none (generated) |
+| 22 | `run_all.sh` | Bash | 99 | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
+| 23 | `sovereign/.gitignore` | ignore list | 22 | none |
+| 24 | `sovereign/README.md` | Markdown | 131 | none |
+| 25 | `sovereign/control/config/config.exs` | Elixir config | 34 | none |
+| 26 | `sovereign/control/config/sudoplatformconfig.example.json` | JSON | 0 | none (1 record, no trailing newline) |
+| 27 | `sovereign/control/lib/application.ex` | Elixir | 38 | none |
+| 28 | `sovereign/control/lib/kernel_port.ex` | Elixir | 251 | Mojo worker binaries (`field_ops`, `holo_verify`) |
+| 29 | `sovereign/control/lib/receipt_store.ex` | Elixir | 71 | none (`:crypto` stdlib) |
+| 30 | `sovereign/control/lib/sudo/api_client.ex` | Elixir | 94 | none (`:json` stdlib); network not wired |
+| 31 | `sovereign/control/lib/sudo/beam_session.ex` | Elixir | 185 | JVM (`java`, external process) |
+| 32 | `sovereign/control/lib/sudo/common.ex` | Elixir | 39 | none |
+| 33 | `sovereign/control/lib/sudo/config_manager.ex` | Elixir | 26 | none |
+| 34 | `sovereign/control/lib/sudo/email.ex` | Elixir | 71 | none |
+| 35 | `sovereign/control/lib/sudo/entitlements.ex` | Elixir | 59 | none |
+| 36 | `sovereign/control/lib/sudo/key_manager.ex` | Elixir | 40 | none |
+| 37 | `sovereign/control/lib/sudo/logging.ex` | Elixir | 30 | none (`Logger` stdlib) |
+| 38 | `sovereign/control/lib/sudo/notification.ex` | Elixir | 33 | none |
+| 39 | `sovereign/control/lib/sudo/profiles.ex` | Elixir | 52 | none |
+| 40 | `sovereign/control/lib/sudo/relay.ex` | Elixir | 47 | none |
+| 41 | `sovereign/control/lib/sudo/secure_id_verification.ex` | Elixir | 35 | none |
+| 42 | `sovereign/control/lib/sudo/telephony.ex` | Elixir | 48 | none |
+| 43 | `sovereign/control/lib/sudo/user.ex` | Elixir | 52 | none |
+| 44 | `sovereign/control/lib/sudo/virtual_cards.ex` | Elixir | 54 | none |
+| 45 | `sovereign/control/mix.exs` | Elixir config | 47 | none (`deps: []`) |
+| 46 | `sovereign/control/test/sha256_and_framing_test.exs` | Elixir (ExUnit) | 94 | none (`:crypto`, `KernelPort`) |
+| 47 | `sovereign/control/test/test_helper.exs` | Elixir (ExUnit) | 17 | none |
+| 48 | `sovereign/docs/API_CLIENT_DECISION.md` | Markdown | 86 | none |
+| 49 | `sovereign/docs/PORT_PROTOCOL.md` | Markdown | 118 | none |
+| 50 | `sovereign/docs/SURFACE_MAP.md` | Markdown | 66 | none |
+| 51 | `sovereign/kernels/build_kernels.sh` | Bash | 40 | `mojo` |
+| 52 | `sovereign/kernels/field_ops.mojo` | Mojo 1.2 | 224 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 53 | `sovereign/kernels/holo_verify.mojo` | Mojo 1.2 | 344 | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
+| 54 | `sovereign/receipts/SHA256SUMS` | checksum list | 33 | none (generated) |
+| 55 | `sovereign/receipts/beam_session_transcript.txt` | text | 22 | none (generated) |
+| 56 | `sovereign/run_pipeline.sh` | Bash | 77 | `mojo`, `mix`, `sha256sum` |
+| 57 | `sovereign/vm/bootstrap.sh` | Bash | 135 | apt, Erlang Solutions repo, host-share mojo tarball |
+| 58 | `sovereign/vm/build_mojo_tarball.sh` | Bash | 135 | `bazelw`, `tar`, `zstd`, `sha256sum` |
+| 59 | `tests/SudoEmulatorTest.java` | Java 17+ | 262 | JDK stdlib only |
+| 60 | `tests/WsSmoke.java` | Java 17+ | 130 | JDK stdlib only (`java.net.http`) |
 
-Totals: 59 files, 5512 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
+Totals: 60 files, 7080 lines. External libraries in the entire tree: exactly one — Cowboy 2.12.0
 (`beam/rebar.config`), plus the `erlang:27-bookworm` container base image (`Dockerfile`).
 
 All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, and Bash.
 
 ## 2.2 File-by-file audit
 
-### 2.2.1 `.dockerignore` (3 lines, ignore list)
+### 2.2.1 `.dockerignore` (19 lines, ignore list)
 
 | Field | Value |
 |---|---|
@@ -604,7 +623,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Entry points | none |
 | Dependencies | none |
 
-### 2.2.2 `.gitignore` (3 lines, ignore list)
+### 2.2.2 `.gitignore` (19 lines, ignore list)
 
 | Field | Value |
 |---|---|
@@ -613,7 +632,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Entry points | none |
 | Dependencies | none |
 
-### 2.2.3 `Dockerfile` (17 lines, Dockerfile)
+### 2.2.3 `Dockerfile` (33 lines, Dockerfile)
 
 | Field | Value |
 |---|---|
@@ -627,7 +646,15 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Reproducible container image for the WebSocket gateway path. |
 | Dependencies | `erlang:27-bookworm`, apt packages `openjdk-17-jdk-headless`, `openjdk-17-jre-headless`, `mawk` |
 
-### 2.2.4 `Makefile` (19 lines, GNU Make)
+### 2.2.4 `LICENSE` (661 lines, License text)
+
+| Field | Value |
+|---|---|
+| Content | Full canonical text of the GNU Affero General Public License, version 3, 19 November 2007 (661 lines). The sole license for this tree. |
+| Responsibility | License text for every file in the tree; every other file carries the AGPL-3.0-only header pointing here. |
+| Dependencies | none |
+
+### 2.2.5 `Makefile` (35 lines, GNU Make)
 
 | Field | Value |
 |---|---|
@@ -641,7 +668,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Base-layer build and test entry points. |
 | Dependencies | JDK 17+ (`javac`, `java`, `jar`); rebar3 for `beam` target |
 
-### 2.2.5 `README.md` (2094 lines, Markdown)
+### 2.2.6 `README.md` (2121 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -649,7 +676,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Top-level specification entry point for the combined tree. |
 | Dependencies | none |
 
-### 2.2.6 `awk/policy.awk` (6 lines, AWK)
+### 2.2.7 `awk/policy.awk` (22 lines, AWK)
 
 | Field | Value |
 |---|---|
@@ -659,7 +686,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | The entire authorization decision. Last exact match wins. |
 | Dependencies | POSIX AWK (`/usr/bin/awk`; mawk 1.3.4 on audit host) |
 
-### 2.2.7 `awk/sudoers` (14 lines, policy data)
+### 2.2.8 `awk/sudoers` (30 lines, policy data)
 
 | Field | Value |
 |---|---|
@@ -669,7 +696,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | The only policy data in the tree. |
 | Dependencies | none (read by `awk/policy.awk`) |
 
-### 2.2.8 `beam/rebar.config` (2 lines, Erlang config)
+### 2.2.9 `beam/rebar.config` (18 lines, Erlang config)
 
 | Field | Value |
 |---|---|
@@ -678,7 +705,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | rebar3 build configuration for the Erlang gateway application. |
 | Dependencies | Cowboy 2.12.0 (Hex) |
 
-### 2.2.9 `beam/src/sudo_beam.app.src` (6 lines, Erlang config)
+### 2.2.10 `beam/src/sudo_beam.app.src` (22 lines, Erlang config)
 
 | Field | Value |
 |---|---|
@@ -689,7 +716,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | OTP application resource file. |
 | Dependencies | Cowboy (application dependency) |
 
-### 2.2.10 `beam/src/sudo_beam_app.erl` (20 lines, Erlang)
+### 2.2.11 `beam/src/sudo_beam_app.erl` (36 lines, Erlang)
 
 | Field | Value |
 |---|---|
@@ -701,7 +728,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Gateway application entry point; token validation and listener startup. |
 | Dependencies | Cowboy, `crypto` (OTP stdlib) |
 
-### 2.2.11 `beam/src/sudo_beam_ffi.erl` (19 lines, Erlang)
+### 2.2.12 `beam/src/sudo_beam_ffi.erl` (35 lines, Erlang)
 
 | Field | Value |
 |---|---|
@@ -713,7 +740,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Erlang Port FFI to the Java worker. Out-of-process, not a NIF. |
 | Dependencies | JVM (`java`, external process) |
 
-### 2.2.12 `beam/src/sudo_beam_sup.erl` (5 lines, Erlang)
+### 2.2.13 `beam/src/sudo_beam_sup.erl` (21 lines, Erlang)
 
 | Field | Value |
 |---|---|
@@ -723,7 +750,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Gateway supervisor; intentionally childless. WebSocket handler processes are spawned by Cowboy, not supervised here. |
 | Dependencies | none |
 
-### 2.2.13 `beam/src/sudo_beam_ws.erl` (45 lines, Erlang)
+### 2.2.14 `beam/src/sudo_beam_ws.erl` (61 lines, Erlang)
 
 | Field | Value |
 |---|---|
@@ -737,7 +764,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | One WebSocket connection: auth, one in-flight request, timeout, teardown. |
 | Dependencies | Cowboy, `crypto` (OTP stdlib) |
 
-### 2.2.14 `compose.yaml` (16 lines, YAML / Compose)
+### 2.2.15 `compose.yaml` (32 lines, YAML / Compose)
 
 | Field | Value |
 |---|---|
@@ -747,7 +774,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Container deployment definition for the gateway path. |
 | Dependencies | Docker Compose; image from `Dockerfile` |
 
-### 2.2.15 `java/src/SudoEmulator.java` (137 lines, Java 17+)
+### 2.2.16 `java/src/SudoEmulator.java` (153 lines, Java 17+)
 
 | Field | Value |
 |---|---|
@@ -761,7 +788,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | The entire virtual sudo: parsing, identity, policy dispatch, virtual filesystem. |
 | Dependencies | JDK stdlib only (`java.io.*`, `java.nio.charset.StandardCharsets`, `java.nio.file.*`, `java.util.*`, `java.util.concurrent.TimeUnit`) |
 
-### 2.2.16 `receipts/SHA256SUMS` (56 lines, checksum list)
+### 2.2.17 `receipts/SHA256SUMS` (56 lines, checksum list)
 
 | Field | Value |
 |---|---|
@@ -771,7 +798,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Integrity manifest for the combined tree. |
 | Dependencies | none (generated) |
 
-### 2.2.17 `run_all.sh` (83 lines, Bash)
+### 2.2.18 `run_all.sh` (99 lines, Bash)
 
 | Field | Value |
 |---|---|
@@ -784,7 +811,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Single entry point for build + verify of the whole layered tree. |
 | Dependencies | `javac`, `java`, `mojo`, `mix`, `elixir`, `sha256sum`, `find`, `grep` |
 
-### 2.2.18 `sovereign/.gitignore` (6 lines, ignore list)
+### 2.2.19 `sovereign/.gitignore` (22 lines, ignore list)
 
 | Field | Value |
 |---|---|
@@ -792,7 +819,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Excludes Mojo binaries, Elixir build output, deps, Mojo cache, zips, and Erlang crash dumps from version control. |
 | Dependencies | none |
 
-### 2.2.19 `sovereign/README.md` (113 lines, Markdown)
+### 2.2.20 `sovereign/README.md` (131 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -801,7 +828,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Sovereign-layer documentation. |
 | Dependencies | none |
 
-### 2.2.20 `sovereign/control/config/config.exs` (18 lines, Elixir config)
+### 2.2.21 `sovereign/control/config/config.exs` (34 lines, Elixir config)
 
 | Field | Value |
 |---|---|
@@ -809,7 +836,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Runtime configuration: Sudo config path and worker binary directory. No secrets. |
 | Dependencies | none |
 
-### 2.2.21 `sovereign/control/config/sudoplatformconfig.example.json` (0 lines, JSON)
+### 2.2.22 `sovereign/control/config/sudoplatformconfig.example.json` (0 lines, JSON)
 
 | Field | Value |
 |---|---|
@@ -817,7 +844,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Placeholder example for the guest config file. No real values. |
 | Dependencies | none |
 
-### 2.2.22 `sovereign/control/lib/application.ex` (22 lines, Elixir)
+### 2.2.23 `sovereign/control/lib/application.ex` (38 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -826,7 +853,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Root supervisor for the Elixir application. |
 | Dependencies | none |
 
-### 2.2.23 `sovereign/control/lib/kernel_port.ex` (235 lines, Elixir)
+### 2.2.24 `sovereign/control/lib/kernel_port.ex` (251 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -840,7 +867,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Persistent, binary-framed Mojo worker Ports with timeout and restart. |
 | Dependencies | Mojo worker binaries `field_ops`, `holo_verify` (built by `kernels/build_kernels.sh`) |
 
-### 2.2.24 `sovereign/control/lib/receipt_store.ex` (55 lines, Elixir)
+### 2.2.25 `sovereign/control/lib/receipt_store.ex` (71 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -852,7 +879,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Content-addressed SHA-256 receipt tracker (BEAM-side, small files only). |
 | Dependencies | none (`:crypto` OTP stdlib) |
 
-### 2.2.25 `sovereign/control/lib/sudo/api_client.ex` (78 lines, Elixir)
+### 2.2.26 `sovereign/control/lib/sudo/api_client.ex` (94 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -865,7 +892,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | The single outbound boundary. Makes no network call in this tree. |
 | Dependencies | none (`:json` OTP stdlib) |
 
-### 2.2.26 `sovereign/control/lib/sudo/beam_session.ex` (169 lines, Elixir)
+### 2.2.27 `sovereign/control/lib/sudo/beam_session.ex` (185 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -880,7 +907,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Elixir bridge to the Java worker; same `{packet, 4}` framing as `sudo_beam_ffi`. Not supervised. |
 | Dependencies | JVM (`java`, external process); AWK policy files |
 
-### 2.2.27 `sovereign/control/lib/sudo/common.ex` (23 lines, Elixir)
+### 2.2.28 `sovereign/control/lib/sudo/common.ex` (39 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -892,7 +919,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Shared result, error, and pagination shapes for all Sudo stubs. |
 | Dependencies | none |
 
-### 2.2.28 `sovereign/control/lib/sudo/config_manager.ex` (10 lines, Elixir)
+### 2.2.29 `sovereign/control/lib/sudo/config_manager.ex` (26 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -901,7 +928,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-config-manager-*` (Config Manager SDK). |
 | Dependencies | none |
 
-### 2.2.29 `sovereign/control/lib/sudo/email.ex` (55 lines, Elixir)
+### 2.2.30 `sovereign/control/lib/sudo/email.ex` (71 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -911,7 +938,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-email-*` (Email SDK): addresses, folders, send/receive, drafts, scheduled send, blocklists, aliases. |
 | Dependencies | none |
 
-### 2.2.30 `sovereign/control/lib/sudo/entitlements.ex` (43 lines, Elixir)
+### 2.2.31 `sovereign/control/lib/sudo/entitlements.ex` (59 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -920,7 +947,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-entitlements-*` and `sudo-entitlements-admin-*`. |
 | Dependencies | none |
 
-### 2.2.31 `sovereign/control/lib/sudo/key_manager.ex` (24 lines, Elixir)
+### 2.2.32 `sovereign/control/lib/sudo/key_manager.ex` (40 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -929,7 +956,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-key-manager-*` (Key Manager SDK). Keys are never logged or returned in plaintext by a stub. |
 | Dependencies | none |
 
-### 2.2.32 `sovereign/control/lib/sudo/logging.ex` (14 lines, Elixir)
+### 2.2.33 `sovereign/control/lib/sudo/logging.ex` (30 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -939,7 +966,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-logging-*` (Logging SDK). |
 | Dependencies | none (`Logger` OTP stdlib) |
 
-### 2.2.33 `sovereign/control/lib/sudo/notification.ex` (17 lines, Elixir)
+### 2.2.34 `sovereign/control/lib/sudo/notification.ex` (33 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -948,7 +975,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-notification-*` / `sudo-notification-web` (Notification SDK). |
 | Dependencies | none |
 
-### 2.2.34 `sovereign/control/lib/sudo/profiles.ex` (36 lines, Elixir)
+### 2.2.35 `sovereign/control/lib/sudo/profiles.ex` (52 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -958,7 +985,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-profiles-*` (Profiles SDK): Sudos, digital identities. |
 | Dependencies | none |
 
-### 2.2.35 `sovereign/control/lib/sudo/relay.ex` (31 lines, Elixir)
+### 2.2.36 `sovereign/control/lib/sudo/relay.ex` (47 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -967,7 +994,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-di-relay-*` and `sudo-di-edge-agent-*` (Decentralized Identity Relay / Edge Agent). |
 | Dependencies | none |
 
-### 2.2.36 `sovereign/control/lib/sudo/secure_id_verification.ex` (19 lines, Elixir)
+### 2.2.37 `sovereign/control/lib/sudo/secure_id_verification.ex` (35 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -976,7 +1003,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-secure-id-verification-*` (Secure ID Verification SDK). |
 | Dependencies | none |
 
-### 2.2.37 `sovereign/control/lib/sudo/telephony.ex` (32 lines, Elixir)
+### 2.2.38 `sovereign/control/lib/sudo/telephony.ex` (48 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -985,7 +1012,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-telephony-*` (Telephony SDK): phone numbers, text messaging, subscriptions. |
 | Dependencies | none |
 
-### 2.2.38 `sovereign/control/lib/sudo/user.ex` (36 lines, Elixir)
+### 2.2.39 `sovereign/control/lib/sudo/user.ex` (52 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -996,7 +1023,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-user-*` (User SDK): registration and authentication. No network call. |
 | Dependencies | none |
 
-### 2.2.39 `sovereign/control/lib/sudo/virtual_cards.ex` (38 lines, Elixir)
+### 2.2.40 `sovereign/control/lib/sudo/virtual_cards.ex` (54 lines, Elixir)
 
 | Field | Value |
 |---|---|
@@ -1005,7 +1032,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Stub for `sudo-virtual-cards-*`, `sudo-virtual-cards-simulator-*`, `sudo-virtual-cards-admin-*` (Virtual Cards SDK). |
 | Dependencies | none |
 
-### 2.2.40 `sovereign/control/mix.exs` (31 lines, Elixir config)
+### 2.2.41 `sovereign/control/mix.exs` (47 lines, Elixir config)
 
 | Field | Value |
 |---|---|
@@ -1016,7 +1043,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Mix project definition for the Elixir control plane. |
 | Dependencies | none |
 
-### 2.2.41 `sovereign/control/test/sha256_and_framing_test.exs` (78 lines, Elixir ExUnit)
+### 2.2.42 `sovereign/control/test/sha256_and_framing_test.exs` (94 lines, Elixir ExUnit)
 
 | Field | Value |
 |---|---|
@@ -1029,7 +1056,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Kernel verification in the stack's own language: SHA-256 and framing checked against OTP `:crypto` through the live Port workers. |
 | Dependencies | none (`:crypto`, `KernelPort`, ExUnit — all OTP stdlib) |
 
-### 2.2.42 `sovereign/control/test/test_helper.exs` (1 line, Elixir ExUnit)
+### 2.2.43 `sovereign/control/test/test_helper.exs` (17 lines, Elixir ExUnit)
 
 | Field | Value |
 |---|---|
@@ -1037,7 +1064,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | ExUnit bootstrap for `mix test`. |
 | Dependencies | none |
 
-### 2.2.43 `sovereign/docs/API_CLIENT_DECISION.md` (68 lines, Markdown)
+### 2.2.44 `sovereign/docs/API_CLIENT_DECISION.md` (86 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -1046,7 +1073,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Decision record for the single outbound boundary. |
 | Dependencies | none |
 
-### 2.2.44 `sovereign/docs/PORT_PROTOCOL.md` (100 lines, Markdown)
+### 2.2.45 `sovereign/docs/PORT_PROTOCOL.md` (118 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -1054,7 +1081,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Wire protocol specification for KernelPort <-> Mojo workers. |
 | Dependencies | none |
 
-### 2.2.45 `sovereign/docs/SURFACE_MAP.md` (48 lines, Markdown)
+### 2.2.46 `sovereign/docs/SURFACE_MAP.md` (66 lines, Markdown)
 
 | Field | Value |
 |---|---|
@@ -1064,7 +1091,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Provenance record: what was mapped, from where, without cloning or copying. |
 | Dependencies | none |
 
-### 2.2.46 `sovereign/kernels/build_kernels.sh` (24 lines, Bash)
+### 2.2.47 `sovereign/kernels/build_kernels.sh` (40 lines, Bash)
 
 | Field | Value |
 |---|---|
@@ -1075,7 +1102,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Compile Mojo kernels to `control/priv/`. |
 | Dependencies | `mojo` on PATH |
 
-### 2.2.47 `sovereign/kernels/field_ops.mojo` (208 lines, Mojo 1.2)
+### 2.2.48 `sovereign/kernels/field_ops.mojo` (224 lines, Mojo 1.2)
 
 | Field | Value |
 |---|---|
@@ -1090,7 +1117,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Goldilocks field arithmetic + Port worker. Not constant-time, not SIMD-tuned. |
 | Dependencies | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
 
-### 2.2.48 `sovereign/kernels/holo_verify.mojo` (328 lines, Mojo 1.2)
+### 2.2.49 `sovereign/kernels/holo_verify.mojo` (344 lines, Mojo 1.2)
 
 | Field | Value |
 |---|---|
@@ -1104,7 +1131,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Pure-Mojo SHA-256 receipt verifier + Port worker. Never prints a false `VERIFIED`. |
 | Dependencies | Mojo stdlib only (`std.sys`, `std.ffi`, `std.memory`) |
 
-### 2.2.49 `sovereign/receipts/SHA256SUMS` (33 lines, checksum list)
+### 2.2.50 `sovereign/receipts/SHA256SUMS` (33 lines, checksum list)
 
 | Field | Value |
 |---|---|
@@ -1114,7 +1141,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Integrity manifest for the sovereign subtree. |
 | Dependencies | none (generated) |
 
-### 2.2.50 `sovereign/receipts/beam_session_transcript.txt` (22 lines, text)
+### 2.2.51 `sovereign/receipts/beam_session_transcript.txt` (22 lines, text)
 
 | Field | Value |
 |---|---|
@@ -1123,7 +1150,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Evidence artifact for the live bridge round-trip. |
 | Dependencies | none (generated) |
 
-### 2.2.51 `sovereign/run_pipeline.sh` (61 lines, Bash)
+### 2.2.52 `sovereign/run_pipeline.sh` (77 lines, Bash)
 
 | Field | Value |
 |---|---|
@@ -1136,7 +1163,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Sovereign subtree build/test/release/receipt pipeline. Never fetches a repo or a package. |
 | Dependencies | `mojo`, `mix`, `sha256sum` |
 
-### 2.2.52 `sovereign/vm/bootstrap.sh` (119 lines, Bash)
+### 2.2.53 `sovereign/vm/bootstrap.sh` (135 lines, Bash)
 
 | Field | Value |
 |---|---|
@@ -1150,7 +1177,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | VirtualBox guest provisioning for the clean runtime snapshot. Idempotent where cheap. No repo cloned, no SDK fetched. Freeze the snapshot immediately after this script exits 0. |
 | Dependencies | apt, Erlang Solutions repo, Stage 1 tarball on the host share (guest only) |
 
-### 2.2.53 `tests/SudoEmulatorTest.java` (246 lines, Java 17+)
+### 2.2.54 `tests/SudoEmulatorTest.java` (262 lines, Java 17+)
 
 | Field | Value |
 |---|---|
@@ -1163,7 +1190,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Framed-IPC test harness for the Java worker. JDK stdlib only. |
 | Dependencies | JDK stdlib only (`java.io.*`, `java.nio.*`, `java.util.*`, `java.util.concurrent.TimeUnit`) |
 
-### 2.2.54 `tests/WsSmoke.java` (114 lines, Java 17+)
+### 2.2.55 `tests/WsSmoke.java` (130 lines, Java 17+)
 
 | Field | Value |
 |---|---|
@@ -1175,7 +1202,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Live gateway smoke test. JDK stdlib only. |
 | Dependencies | JDK stdlib only (`java.net.URI`, `java.net.http.HttpClient`, `java.net.http.WebSocket`, `java.util.concurrent.*`) |
 
-### 2.2.55 `assets/architecture.svg` (91 lines, SVG)
+### 2.2.56 `assets/architecture.svg` (109 lines, SVG)
 
 | Field | Value |
 |---|---|
@@ -1184,7 +1211,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Visual companion to §1.2. Hand-built from the real component map. |
 | Dependencies | none |
 
-### 2.2.56 `assets/data-flow.svg` (80 lines, SVG)
+### 2.2.57 `assets/data-flow.svg` (98 lines, SVG)
 
 | Field | Value |
 |---|---|
@@ -1193,7 +1220,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Visual companion to §1.3. Hand-built from the real request path. |
 | Dependencies | none |
 
-### 2.2.57 `assets/terminal-run-all.svg` (35 lines, SVG)
+### 2.2.58 `assets/terminal-run-all.svg` (53 lines, SVG)
 
 | Field | Value |
 |---|---|
@@ -1202,7 +1229,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Visual companion to §4. Every line verified verbatim against the real run log. |
 | Dependencies | none |
 
-### 2.2.58 `assets/wire-framing.svg` (87 lines, SVG)
+### 2.2.59 `assets/wire-framing.svg` (105 lines, SVG)
 
 | Field | Value |
 |---|---|
@@ -1211,7 +1238,7 @@ All other code runs on JDK stdlib, OTP/Elixir stdlib, Mojo stdlib, POSIX AWK, an
 | Responsibility | Visual companion to §3. Hand-built from the real framing code. |
 | Dependencies | none |
 
-### 2.2.59 `sovereign/vm/build_mojo_tarball.sh` (119 lines, Bash)
+### 2.2.60 `sovereign/vm/build_mojo_tarball.sh` (135 lines, Bash)
 
 | Field | Value |
 |---|---|
