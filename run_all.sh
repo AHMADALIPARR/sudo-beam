@@ -14,6 +14,13 @@ have() { command -v "$1" >/dev/null 2>&1; }
 export ELIXIR_ERL_OPTIONS="${ELIXIR_ERL_OPTIONS:-+fnu}"
 export LANG="${LANG:-C.UTF-8}"
 
+# Pre-flight gate (fail closed): zero Python in this stack.
+# If a .py file or a Python reference ever enters the tree,
+# the pipeline stops here, before any compilation.
+! find "$ROOT" -name '*.py' | grep -q . || { echo "[run_all] FAIL: .py files present in the tree" >&2; exit 1; }
+! grep -rnI 'py''thon' "$ROOT" --exclude-dir=.git --exclude-dir=_build --exclude-dir=priv --exclude-dir=.mojo_cache | grep -q . || { echo "[run_all] FAIL: forbidden references present in the tree" >&2; exit 1; }
+log "pre-flight: zero Python OK"
+
 # 1. Java / AWK tests for the base (needs javac + java).
 if have javac && have java; then
   log "make test (Java/AWK, base)"
